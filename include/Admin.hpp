@@ -7,7 +7,7 @@ class Admin : protected Member {
 private:
 
 public:
-    
+    Admin();
 };
 
 #endif

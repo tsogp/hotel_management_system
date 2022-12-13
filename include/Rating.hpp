@@ -5,9 +5,9 @@ class Rating {
 private:
 
 public:
-    Rating () {};
+    Rating();
 
-    bool constraintCheck() {};
+    bool constraintCheck();
 };
 
 #endif

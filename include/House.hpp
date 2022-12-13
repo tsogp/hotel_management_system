@@ -10,7 +10,7 @@ private:
 public:
     House() {};
 
-    void getAvailableDates() {};
+    void getAvailableDates();
 };
 
 #endif

@@ -5,9 +5,9 @@ class Request {
 private:
 
 public:
-    Request() {};
+    Request();
 
-    bool constraintCheck() {};
+    bool constraintCheck();
 };
 
 #endif

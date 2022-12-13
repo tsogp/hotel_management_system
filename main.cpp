@@ -2,9 +2,9 @@
 #include <vector>
 #include <string>
 
-#include "src/Admin.hpp"
-#include "src/House.hpp"
-#include "src/Member.hpp"
+#include "include/Admin.hpp"
+#include "include/House.hpp"
+#include "include/Member.hpp"
 
 int main(int argc, char *argv[]) {
     std::cout << "EEET2482/COSC2082 ASSIGNMENT\n"  
