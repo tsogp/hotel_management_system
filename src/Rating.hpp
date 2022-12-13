@@ -8,6 +8,6 @@ public:
     Rating () {};
 
     bool constraintCheck() {};
-}
+};
 
 #endif
