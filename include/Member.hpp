@@ -1,16 +1,29 @@
 #ifndef MEMBER_HPP
 #define MEMBER_HPP
 
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
 #include "Request.hpp"
 #include "House.hpp"
 #include "Rating.hpp"
 
 class Member {
 private:
-
+    string username;
+    string name;
+    string password;
+    int phoneNo;
 public:
-    Member();
-    
+    //Will include House class for the user to add later 
+    Member(string usernameVal,string nameVal
+          ,string passwordVal,int phoneNoVal)
+            : username(usernameVal), name(nameVal),
+            password(passwordVal), phoneNo(phoneNoVal){}
+
+    // All function will be pushed to System class
     bool registerUser();
     void viewHouses();
     bool loginUser();
@@ -20,6 +33,8 @@ public:
     bool occupyAHouse();
     bool rateAHouse();
     bool rateAnOwner();
+
+    friend class System;
 };
 
 #endif
