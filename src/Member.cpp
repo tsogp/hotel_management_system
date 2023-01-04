@@ -62,62 +62,90 @@ bool registerUser()
     std::fstream fileRead;
     std::fstream fileWrite;
 
-    fileRead.open(location, std::ios::in);
+    bool endAll = false; // End all Loop
+
     fileWrite.open(location, std::ios::app | std::ios::out);
 
-    while (true)
+    while (true) // Name Maker loop
     {
-        std::cout << "Pls Type your Username and Password: \n";
+        int elementCount = 1; // To pinpoint which element in the csv line
 
-        nameMaker:
-
-        std::cout << "Username: ";
-
-        std::cin >> userInput;
-
-        if(fileRead.peek() == std::ifstream::traits_type::eof())
+        if (endAll == true)
         {
-            fileWrite << userInput << ",";
-
-            std::cout << "Username " << userInput << " is the 1st in our list! Congrat! \n";
-
             break;
 
         }
         else
         {
-            while(!fileRead.eof())
+            bool loop1 = false;  // *Loop Switch 1*
+
+            fileRead.open(location, std::ios::in);
+
+            std::cout << "Username: ";
+
+            std::cin >> userInput;
+
+            if(fileRead.peek() == std::ifstream::traits_type::eof()) // Check if this the 1st name in the list
             {
-                while(std::getline(fileRead, name, ','))
+                fileWrite << userInput << ",";
+
+                std::cout << "Username " << userInput << " is the 1st in our list! Congrat! \n";
+
+                break;
+
+            }
+            else 
+            {
+                if (loop1 == true) // *Loop Switch 1*
                 {
-                    if(name == userInput)
+                    break;
+
+                }
+                else
+                {
+                    while(!fileRead.eof()) // Till the end of file
                     {
-                        std::cout << "Username have already been taken! Pls choose another name. \n";
+                        while(std::getline(fileRead, name, ',')) // Get the elements
+                        {
 
-                        goto nameMaker;
+                            std::cout << name << "\n";
+                            std::cout << elementCount << "\n";
 
-                    }
-                    else if(name != userInput && fileRead.eof())
-                    {
-                        fileWrite << userInput << ",";
+                            if(name == userInput && (elementCount % 2 != 0)) // If 1st element which is name already exist make them input again
+                            {
+                                std::cout << "Username have already been taken! Pls choose another name. \n";
 
-                        std::cout << "Username Accepted! Hello " << userInput << "\n";
+                                elementCount++;
 
-                        goto checkEnd;
+                                loop1 = true;
 
-                    }
-                    else
-                    {
-                        continue;
+                                fileRead.close();
 
+                            }
+                            else if(name != userInput && fileRead.eof() && (elementCount % 2 != 0)) // If name not yet appear and it not at the end of the file write it into the file
+                            {
+                                fileWrite << "\n" << userInput << ",";
+
+                                std::cout << "Username Accepted! Hello " << userInput << "\n";
+
+                                endAll = true;
+
+                            }
+                            else
+                            {
+                                elementCount++;
+
+                            };
+
+                        };
+                        
                     };
 
-                };
-                
-            };
+                }
 
-        };
-        checkEnd:break;
+            };            
+
+        }
 
     };
     
@@ -125,8 +153,7 @@ bool registerUser()
     
     std::cin >> passInput;
 
-    fileWrite << passInput
-        << "\n"; 
+    fileWrite << passInput << "\n"; 
 
     fileRead.close();
     fileWrite.close();
