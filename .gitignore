@@ -1,4 +1,6 @@
 # Executables
 a.out
 main
-.vscode
+
+# Config folders
+/.vscode
