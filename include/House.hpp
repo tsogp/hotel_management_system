@@ -4,7 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
-using namespace std;
+
+using std::string;
 
 #include "Member.hpp"
 
@@ -15,7 +16,7 @@ class House {
     public:
         //House class will be declared in the Member
         House(string locationVal, string descriptionVal)
-            : location(locationVal), description(descriptionVal){}
+            : location(locationVal), description(descriptionVal) {}
         
         friend class Member;
         friend class System;

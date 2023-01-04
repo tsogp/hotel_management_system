@@ -4,7 +4,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-using namespace std;
+
+using std::string;
+using std::vector;
 
 #include "Request.hpp"
 #include "House.hpp"
@@ -16,6 +18,11 @@ private:
     string name;
     string password;
     int phoneNo;
+public:
+    //Will include House class for the user to add later 
+    Member(string usernameVal, string nameVal, string passwordVal, int phoneNoVal)
+            : username(usernameVal), name(nameVal), password(passwordVal), phoneNo(phoneNoVal) {}
+
 public:
     //Will include House class for the user to add later 
     Member(string usernameVal,string nameVal
