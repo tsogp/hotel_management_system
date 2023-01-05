@@ -7,6 +7,23 @@
 
 class Member {
 private:
+<<<<<<< Updated upstream
+=======
+    int ID;
+    string userType;
+    string username;
+    string name;
+    string password;
+    int phoneNo;
+    //House listedHouse;
+    //vector<Rating> occupierRating;
+public:
+    //Will include House class for the user to add later 
+    Member(int idVal,string userTypeVal,string usernameVal,string nameVal
+          ,string passwordVal,int phoneNoVal)
+            :ID(idVal),userType(userTypeVal), username(usernameVal), name(nameVal),
+            password(passwordVal), phoneNo(phoneNoVal){}
+>>>>>>> Stashed changes
 
 public:
     Member();
