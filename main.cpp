@@ -5,6 +5,7 @@
 #include "include/Admin.hpp"
 #include "include/House.hpp"
 #include "include/Member.hpp"
+#include "include/System.hpp"
 
 int main(int argc, char *argv[]) {
     std::cout << "EEET2482/COSC2082 ASSIGNMENT\n"  
@@ -14,11 +15,21 @@ int main(int argc, char *argv[]) {
          << "s3777235, Hua Ha Bao Long\n"
          << "s3884998, Tran Nguyen Huynh Trung\n"
          << "s3938011, Vu Thien Minh Hao\n"
-         << "s3963284, Potemkin Pavel\n\n"
-         << "1. Guest\n"
-         << "2. Member\n"   
-         << "3. Admin\n"
-         << "Use the app as:";
+         << "s3963284, Potemkin Pavel\n\n";
+        //  << "1. Guest\n"
+        //  << "2. Member\n"   
+        //  << "3. Admin\n"
+        //  << "Use the app as:";
+
+    System *sys = new (std::nothrow) System;
+    
+    if (sys != nullptr) {
+        sys->reloadData();
+        sys->registerMem();
+        sys->saveData();
+    }
+
+    delete sys;
 
     return 0;
 }

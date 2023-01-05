@@ -15,9 +15,8 @@ class House {
         string description;
     public:
         //House class will be declared in the Member
-        House(string locationVal, string descriptionVal)
-            : location(locationVal), description(descriptionVal) {}
-        
+        House(string locationVal, string descriptionVal);
+
         friend class Member;
         friend class System;
         void getAvailableDates();
