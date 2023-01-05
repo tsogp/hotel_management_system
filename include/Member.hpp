@@ -11,6 +11,7 @@ using std::vector;
 #include "Request.hpp"
 #include "House.hpp"
 #include "Rating.hpp"
+#include "Date.hpp"
 
 class Member {
 private:
@@ -21,15 +22,8 @@ private:
 public:
     //Will include House class for the user to add later 
     Member(string usernameVal, string nameVal, string passwordVal, int phoneNoVal)
-            : username(usernameVal), name(nameVal), password(passwordVal), phoneNo(phoneNoVal) {}
-
-public:
-    //Will include House class for the user to add later 
-    Member(string usernameVal,string nameVal
-          ,string passwordVal,int phoneNoVal)
-            : username(usernameVal), name(nameVal),
-            password(passwordVal), phoneNo(phoneNoVal){}
-
+            : username(usernameVal), name(nameVal), password(passwordVal), phoneNo(phoneNoVal) {};
+    
     // All function will be pushed to System class
     bool registerUser();
     void viewHouses();

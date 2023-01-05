@@ -5,25 +5,27 @@
 #include <cstring>
 #include <vector>
 #include <fstream>
-using namespace std;
+
+using std::string;
+using std::vector;
+using std::ofstream;
+using std::ios;
+using std::getline;
+using std::cin;
+using std::cout;
+using std::ifstream;
 
 #include "Member.hpp"
 #define FILENAME "dataFile.csv"
 
-class System
-{
+class System {
     private:
-        vector<Member> members{};
-
+        vector<Member> members {};
     public:
-
         // Use to locate the user in the CSV file, then return the line of that specific username to be use
-        int findMember(string username)
-        {
-            for(int i = 0; i < members.size(); i++)
-            {
-                if(members[i].username == username)
-                {
+        int findMember(string username) {
+            for(int i = 0; i < members.size(); i++) {
+                if(members[i].username == username) {
                     cout << i;
                     return i;
                 }
@@ -32,17 +34,14 @@ class System
         }
         
         // Data saving function, only use when closing out of the program
-        bool saveData()
-        {
+        bool saveData() {
             ofstream dataFile;
-            dataFile.open(FILENAME,ios::out);
-            if (!dataFile.is_open())
-            {
+            dataFile.open(FILENAME, ios::out);
+            if (!dataFile.is_open()) {
                 return false;
             }
 
-            for (Member &mem: members)
-            {
+            for (Member &mem: members) {
                 dataFile << mem.username << "\t" << mem.password << "\t" 
                          << mem.name << "\t" << mem.phoneNo << "\n";
             }
@@ -54,38 +53,31 @@ class System
         // 2) Ask user to input password, phone no and name
         // 3) Return false until everything is done
 
-        bool registerMem()
-        {
+        bool registerMem() {
             string username;
             cout << "Input your username: ";
-            getline(cin,username);
+            getline(cin, username);
 
             int position = findMember(username);
-            if (position >= 0)
-            {
+            if (position >= 0) {
                 cout << "Username is already taken\n";
                 return false;
-            }
-            else
-            {
+            } else {
                 string password,name;
                 int phoneNo;
 
                 cout << "Input your password: ";
-                do
-                {
+                do {
                     getline(cin, password);
                 } while (password == "");
 
                 cout << "Enter your name: ";
-                do
-                {
+                do {
                     getline(cin,name);
                 } while (name == "");
                 
                 cout << "Enter your phone number: ";
-                do
-                {
+                do {
                     cin >> phoneNo;
                     getchar();
                 } while (phoneNo == 0);
@@ -101,8 +93,7 @@ class System
         // 1) Find if the user name exist or not
         // 2) IF found, check if username and password matches
         // 3) Return true if done
-        bool login()
-        {
+        bool login() {
             string username, password; 
             int position;
             
@@ -110,22 +101,18 @@ class System
             getline(cin, username);
             position = findMember(username);
 
-            if(position < 0 )
-            {
+            if(position < 0) {
                 cout << "Username not found, please register that username!\n";
                 return false;
             }
 
             cout << "Please enter your password: ";
-            getline(cin,password);
+            getline(cin, password);
 
-            if(password == members[position].password)
-            {
+            if (password == members[position].password) {
                 cout << "Welcome back " << members[position].username << "\n";
                 return true;
-            }
-            else
-            {
+            } else {
                 return false;
             }
         }
@@ -136,30 +123,26 @@ class System
             ifstream dataFile;
             dataFile.open(FILENAME, ios::in);
 
-            if(!dataFile.is_open())
-            {
+            if(!dataFile.is_open()) {
                 return false;
             }
 
             string username, password, name, phoneNo;
             int i = 0;
-            while (1)
-            {
+            while (1) {
                 i++;
                 cout << i;
                 getline(dataFile, username, '\t');
                 getline(dataFile, password, '\t');
                 getline(dataFile, name, '\t');
                 getline(dataFile, phoneNo);
-                if (username == "")
-                {
+                if (username == "") {
                     break;
                 }
-                members.push_back(Member(username, name, password, stoi(phoneNo)));
-                
+                members.push_back(Member(username, name, password, stoi(phoneNo))); 
             }
+            
             return true;
         }
-
 };
 #endif
