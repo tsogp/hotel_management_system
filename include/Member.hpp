@@ -7,8 +7,6 @@
 
 class Member {
 private:
-<<<<<<< Updated upstream
-=======
     int ID;
     string userType;
     string username;
@@ -23,8 +21,7 @@ public:
           ,string passwordVal,int phoneNoVal)
             :ID(idVal),userType(userTypeVal), username(usernameVal), name(nameVal),
             password(passwordVal), phoneNo(phoneNoVal){}
->>>>>>> Stashed changes
-
+    friend class System;
 public:
     Member();
     
