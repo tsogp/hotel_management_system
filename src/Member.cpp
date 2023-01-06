@@ -3,19 +3,10 @@
 
 #include "../include/Member.hpp"
 
-Member::Member() {
-
-};
-
-bool Member::registerUser() {
-
-}
+Member::Member(string usernameVal, string nameVal, string passwordVal, string phoneNoVal) 
+    : username(usernameVal), name(nameVal), password(passwordVal), phoneNo(phoneNoVal) {};
 
 void Member::viewHouses() {
-
-}
-
-bool Member::loginUser() {
 
 }
 
