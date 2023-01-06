@@ -45,7 +45,7 @@ class System
             for (Member &mem: members)
             {
                 dataFile << mem.ID << "/t" << mem.userType<< "\t" << mem.username << "\t" << mem.password << "\t" 
-                         << mem.name << "\t" << mem.phoneNo << "\n";
+                         << mem.name << "\t" << mem.phoneNo << "\t" << mem.credits << "\n";
             }
             return true;
         }
@@ -54,7 +54,6 @@ class System
         // 1) Try to find if the member username exist or not
         // 2) Ask user to input password, phone no and name
         // 3) Return false until everything is done
-
         bool registerMem()
         {   
             int ID;
@@ -92,7 +91,7 @@ class System
                     getchar();
                 } while (phoneNo == 0);
                 ID = members.size() + 1;
-                members.push_back(Member(ID,"Member",username,name,password,phoneNo));
+                members.push_back(Member(ID,"Member",username,name,password,phoneNo, 500));
                 cout << "Registration complete!\n";
                 return true;
             }
@@ -149,7 +148,7 @@ class System
                 return false;
             }
 
-            string username, password, name, phoneNo, ID, userType;
+            string username, password, name, phoneNo, ID, userType, credits;
             while (1)
             {
                 getline(dataFile,ID,'\t');
@@ -157,16 +156,71 @@ class System
                 getline(dataFile, username, '\t');
                 getline(dataFile, password, '\t');
                 getline(dataFile, name, '\t');
-                getline(dataFile, phoneNo);
+                getline(dataFile, phoneNo,'\t')
+                getline(dataFile,credits);
                 if (username == "")
                 {
                     break;
                 }
-                members.push_back(Member(stoi(ID), userType, username, name, password, stoi(phoneNo)));
+                members.push_back(Member(stoi(ID), userType, username, name, password, stoi(phoneNo),stod(credits)));
                 
             }
             return true;
         }
 
+        void viewProfile(string username)
+        {
+            int position = findMember(username);
+            cout << "User Profile of " << members[position].username << "\n";
+            cout << "User full name: " << members[position].name << "\n";
+            cout << "User phone number: " << members[position].phoneNo << "\n";
+            cout << "Credits amount: " << members[position].credits << "\n";
+
+            // cout for house class in member
+            
+        }
+
+        void guestView()
+        {
+            //guest view for house
+            //should only include a list of house with their location and description
+        }
+        
+        void adminView()
+        {
+            //admin view
+            //should inclue house location and description and amount of request
+        }
+
+        void searchHouse()
+        {
+            //check and return a valid list of house | Linked list for easy removal ?
+        }
+
+        bool rateOccupier()
+        {
+            // Return true when complete
+            // Return false when failed
+        }
+
+        bool rateHouse()
+        {
+            // Return true when complete
+            // Return false when failed
+        }
+
+        bool requestRent()
+        {
+            // Link list?
+            // Return true when complete
+            // Return false when failed
+        }
+
+        bool acceptRequest()
+        {
+            // Return true when complete
+                //Remove everything else 
+            // Return false when failed
+        }
 };
 #endif
