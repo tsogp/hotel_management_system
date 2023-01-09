@@ -3,9 +3,8 @@
 
 #include "../include/House.hpp"
 
-House::House() {
-
-};
+House::House(string locationVal, string descriptionVal) 
+    : location(locationVal), description(descriptionVal) {};
 
 void House::getAvailableDates() {
 
