@@ -3,7 +3,7 @@
 
 class Rating {
 private:
-
+    
 public:
     Rating();
 

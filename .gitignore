@@ -2,6 +2,11 @@
 a.out
 a.exe
 main
+bin/*
+
+# Config files
 .vscode
 
+# Text files
 users.csv
+houses.csv

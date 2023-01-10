@@ -25,8 +25,10 @@ int main(int argc, char *argv[]) {
     
     if (sys != nullptr) {
         sys->reloadData();
+        sys->reloadHouseData();
+
         sys->registerMem();
-        sys->saveData();
+        
     }
 
     delete sys;

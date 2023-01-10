@@ -14,6 +14,7 @@ using std::getline;
 using std::cin;
 using std::cout;
 using std::ifstream;
+using std::stod;
 
 #include "Request.hpp"
 #include "House.hpp"
@@ -21,24 +22,29 @@ using std::ifstream;
 
 class Member {
 private:
+    unsigned int ID;
     string username;
     string name;
     string password;
     string phoneNo;
+    House *house = nullptr;
+    vector<Request*> sentRequests;
+    vector<Request*> acceptedRequests;
 public:
-    //Will include House class for the user to add later 
-    Member(string usernameVal = "", string nameVal = "", string passwordVal = "", string phoneNoVal = "");
+    // Will include House class for the user to add later 
+    Member(string usernameVal = "", string nameVal = "", string passwordVal = "", string phoneNoVal = "", unsigned int IDVal = 0);
     
-    // All function will be pushed to System class
-    void viewHouses();
-    bool searchHouse();
-    bool requestToRentAHouse();
-    void acceptRequestForAHouse();
-    bool occupyAHouse();
+    bool registerHouse();
+    House* viewHouse();
+
+    void viewSentRequestsInfo();
+    void viewAcceptedRequestsInfo();
+
     bool rateAHouse();
     bool rateAnOwner();
 
     friend class System;
+    friend class Request;
 };
 
 #endif
