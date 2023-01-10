@@ -3,12 +3,7 @@
 
 #include "../include/Request.hpp"
 
-Request::Request() {
-
-};
-
-bool Request::constraintCheck() {
-    
-}
+Request::Request(unsigned int requesterMemberIDVal, unsigned int accepterMemberIDVal, pair<Date, Date> requestDateRangeVal, House* houseVal) 
+    : requesterMemberID(requesterMemberIDVal), accepterMemberID(accepterMemberIDVal), requestDateRange(requestDateRangeVal), house(houseVal) {};
 
 #endif
