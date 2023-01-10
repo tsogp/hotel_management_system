@@ -3,15 +3,20 @@
 
 #include <iostream>
 using namespace std;
-class Rating {
-    private:
-        int score;
-        string comment;
-    public:
-        Rating(int scoreVal = 0, string commentVal = "")
-        :score(scoreVal), comment(commentVal){}
 
-    bool constraintCheck();
+class Rating
+{
+    private:
+        string rater;
+        int rating;
+        string comment;
+    
+    public:
+        Rating(string raterVal,int ratingVal, string commentVal)
+        :rater(raterVal),rating(ratingVal), comment(commentVal){}
+
+        friend class House;
+        friend class Member;
 };
 
 #endif

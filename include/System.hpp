@@ -2,7 +2,7 @@
 #define SYSTEM_HPP
 
 #include <iostream>
-#include <cstring>
+#include <string>
 #include <vector>
 #include <fstream>
 using namespace std;
@@ -182,14 +182,29 @@ class System
 
         void guestView()
         {
-            //guest view for house
+            ///guest view for house
             //should only include a list of house with their location and description
+
+            for(int i = 0; i < members.size(); i++)
+            {
+                cout << "House name: " << members[i].house.name << "\n";
+                cout << "\tLocation: " << members[i].house.location << "\n";
+                cout << "\tDescription: " << members[i].house.description << endl;
+            }
         }
         
         void adminView()
         {
             //admin view
             //should inclue house location and description and amount of request
+
+            for(int i = 0; i < members.size(); i++)
+            {
+                cout << "ID: " << members[i].ID << "| Username: " << members[i].username << endl;
+                cout << "House name: " << members[i].house.name << "\n"; // add rating 
+                // output number of request
+                // if user request show occupier
+            }
         }
 
         void searchHouse()
@@ -201,19 +216,68 @@ class System
         {
             // Return true when complete
             // Return false when failed
+            
+            int ID, score;
+            string comment;
+
+            // Check if the people 
+            // Cout a list of occupier
+            // If not on the list ask the user again
+
+            cout << "Please enter the ID your occupier: ";
+            cin >> ID;
+
+            //pass check
+            cout << "Please enter the rating from -10 to 10 four your occupier: ";
+            cin >> score;
+            //Check if it is in the -10 to 10 range
+
+            cout << "Please enter the comment for your occupier: ";
+            getline(cin,comment);
+
+            members[ID-1].occupierRating.push_back(Rating(username,score,comment));
+
+            return true;
+
+            //return false when fail
+
         }
 
         bool rateHouse()
         {
-            // Return true when complete
-            // Return false when failed
+            int ID, score;
+            string comment;
+
+            // Check if the people 
+            // Cout a list of occupier
+            // If not on the list ask the user again
+
+            cout << "Please enter the ID the House you have occupied: ";
+            cin >> ID;
+
+            //pass check
+            cout << "Please enter the rating from -10 to 10 for the house you have occupied: ";
+            cin >> score;
+            //Check if it is in the -10 to 10 range
+
+            cout << "Please enter the comment for the house you have occupied: ";
+            getline(cin,comment);
+
+            members[ID-1].house.houseRating.push_back(Rating(username,score,comment));
+
+            return true;
+
+            //return false when fail
         }
 
         bool requestRent()
         {
-            // Link list?
-            // Return true when complete
-            // Return false when failed
+            int position = findMember(username);
+
+            // Check search house for suitable location
+            // User input 
+            // Validate user input
+            // Once check is done pushback int the username of the person wanting to request rent
         }
 
         bool acceptRequest()
@@ -221,6 +285,42 @@ class System
             // Return true when complete
                 //Remove everything else 
             // Return false when failed
+
+            // Show list of requested user
+            // Ask user to select a name or exit the tab
+            // Validate user input
+            // Clear the vector and pass the value through to 
+        }
+
+        void listHouse(string username)
+        {
+            string name;
+            string location;
+            string description;
+
+            int postion = findMember(username);
+
+            cout << "Please enter the name of the listed house: ";
+            getline(cin,name);
+            cout << "Please enter the location of your listed house: ";
+            getline(cin,location);
+            cout << "Pleae enter the description of your listed house: ";
+            getline(cin,description);
+
+            members[postion].house.name = name;
+            members[postion].house.location = location;
+            members[postion].house.description = description;
+            //date to be added later
+        }
+
+        void unlistHouse(string username)
+        {
+            int postion = findMember(username);
+
+            members[postion].house.name = "";
+            members[postion].house.location = "";
+            members[postion].house.description = "";
+            //date to be added later
         }
 };
 #endif
