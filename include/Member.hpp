@@ -36,6 +36,7 @@ public:
     
     bool registerHouse();
     House* viewHouse();
+    void deleteHouse();
 
     void viewSentRequestsInfo();
     void viewAcceptedRequestsInfo();
