@@ -2,8 +2,9 @@
 #define HOUSE_HPP
 
 #include <iostream>
+#include <iostream>
 #include <vector>
-#include <cstring>
+#include <string>
 #include <utility>
 
 using std::cout;

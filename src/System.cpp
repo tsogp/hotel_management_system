@@ -14,7 +14,6 @@ System::System() {};
 int System::findMember(string username) {
     for (int i = 0; i < members.size(); i++) {
         if (members[i].username == username) {
-            cout << i;
             return i;
         }
     }
@@ -44,7 +43,9 @@ bool System::saveData() {
 bool System::registerMem() {
     string username;
     cout << "Input your username: ";
-    getline(cin, username);
+    do {
+        getline(cin, username);
+    } while (username == "");
 
     int position = findMember(username);
     if (position >= 0) {
@@ -88,7 +89,10 @@ bool System::loginUser() {
     int position;
     
     cout << "Please enter your username: ";
-    getline(cin, username);
+    do {
+        getline(cin, username);
+    } while (username == "");
+
     position = findMember(username);
 
     if (position < 0) {
@@ -97,7 +101,9 @@ bool System::loginUser() {
     }
 
     cout << "Please enter your password: ";
-    getline(cin, password);
+    do {
+        getline(cin, password);
+    } while (password == "");
 
     if (password == members[position].password) {
         loggedMember = &members[position];

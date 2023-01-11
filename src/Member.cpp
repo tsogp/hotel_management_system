@@ -76,6 +76,10 @@ House* Member::viewHouse() {
     return this->house;
 }
 
+void Member::deleteHouse() {
+        
+}
+
 void Member::viewSentRequestsInfo() {
     if (sentRequests.size() != 0) {
         for (int i = 0; i < sentRequests.size(); i++) {
