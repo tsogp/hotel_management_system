@@ -6,6 +6,21 @@
 Member::Member(string usernameVal, string nameVal, string passwordVal, string phoneNoVal, unsigned int IDVal) 
     : username(usernameVal), name(nameVal), password(passwordVal), phoneNo(phoneNoVal), ID(IDVal) {};
 
+unsigned int Member::getID() {
+    return ID;
+}
+
+void Member::viewProfile() {
+    cout << "Username: " << username << '\n'
+         << "Name: " << name << '\n'
+         << "Password: " << password << '\n'
+         << "Phone Number: " << phoneNo << "\n\n"
+         << "House info: \n";
+    if (viewHouse() != nullptr) {
+        viewHouse()->viewHouseInfo();
+    }
+}
+
 bool Member::registerHouse() {
     if (house != nullptr) {
         cout << "You have already listed a house!\n";
@@ -77,7 +92,16 @@ House* Member::viewHouse() {
 }
 
 void Member::deleteHouse() {
-        
+    for (Request *request: acceptedRequests) {
+        if (request->isAccepted) {
+            cout << "You already have an accepted request for this house. Cannon unlist it.\n\n";            
+            return;
+        }
+    }
+
+    delete house;
+    this->house = nullptr;
+    cout << "House unlisted successfully.\n\n";
 }
 
 void Member::viewSentRequestsInfo() {

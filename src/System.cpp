@@ -6,10 +6,24 @@
 
 #define FILENAME "users.csv"
 #define HOUSES_FILENAME "houses.csv"
+#define REQUESTS_FILENAME "requests.csv"
 
 unsigned int System::IDCounter = 1;
 
-System::System() {};
+System::System() {
+    reloadData();
+    reloadHouseData();
+    reloadRequestData();
+    // reloadRatingData();
+};
+
+System::~System() {
+    saveData();
+    saveHouseData();
+    saveRequestData();
+    // saveRatingData();
+};
+
 
 int System::findMember(string username) {
     for (int i = 0; i < members.size(); i++) {
@@ -49,7 +63,7 @@ bool System::registerMem() {
 
     int position = findMember(username);
     if (position >= 0) {
-        cout << "Username is already taken\n";
+        cout << "Username is already taken. Please try again.\n";
         return false;
     } else {
         string password, name, phoneNo;
@@ -110,6 +124,8 @@ bool System::loginUser() {
         cout << "Welcome back " << members[position].username << "\n";
         return true;
     } else {
+        loggedMember = nullptr;
+        cout << "Username or Password did not match. Please try again.\n";
         return false;
     }
 }
@@ -230,6 +246,74 @@ bool System::reloadHouseData() {
     return true;
 }
 
+bool System::saveRequestData() {
+    ofstream dataFile;
+    dataFile.open(REQUESTS_FILENAME);
+
+    if (!dataFile.is_open()) {
+        return false;
+    }
+
+    for (Request* request: requests) {
+        if (request->isActive) {
+                dataFile << request->requesterMemberID << '\t' << request->accepterMemberID << '\t' 
+                << request->isAccepted << '\t' << request->isActive << '\t' 
+                << request->requestDateRange.first.stringifyDate(true) << '\t'
+                << request->requestDateRange.second.stringifyDate(true) << '\n';
+        }
+
+        delete request;
+    }
+
+    dataFile.close();
+    return true;
+}
+
+bool System::reloadRequestData() {
+    ifstream dataFile;
+    dataFile.open(REQUESTS_FILENAME);
+    
+    if (!dataFile.is_open()) {
+        return false;
+    }
+
+    string currentLine;
+    getline(dataFile, currentLine);
+
+    while (currentLine != "") {
+        string requesterMemberID, accepterMemberID, isAccepted, isActive,
+               firstDateDay, firstMonth, firstYear,
+               secondDay, secondMonth, secondYear;
+        stringstream ss(currentLine);
+
+        getline(ss, requesterMemberID, '\t');
+        getline(ss, accepterMemberID, '\t');
+        getline(ss, isAccepted, '\t');
+        getline(ss, isActive, '\t');
+
+        getline(ss, firstDateDay, '\t');
+        getline(ss, firstMonth, '\t');
+        getline(ss, firstYear, '\t');
+        getline(ss, secondDay, '\t');
+        getline(ss, secondMonth, '\t');
+        getline(ss, secondYear, '\t');
+        
+        Date startDate(stoi(firstDateDay), stoi(firstMonth), stoi(firstYear));
+        Date endDate(stoi(secondDay), stoi(secondMonth), stoi(secondYear));
+        
+        getline(dataFile, currentLine);
+
+        Request *reqPtr = new Request(stoi(requesterMemberID), stoi(accepterMemberID), make_pair(startDate, endDate), members[stoi(accepterMemberID) - 1].viewHouse());
+
+        members[stoi(accepterMemberID) - 1].acceptedRequests.push_back(reqPtr);
+        members[stoi(requesterMemberID) - 1].sentRequests.push_back(reqPtr);
+        requests.push_back(reqPtr);
+    }
+    
+    dataFile.close();
+    return true;
+}
+
 vector<House> System::viewHouses(Member *loggedMember) {
     vector<House> houses;
 
@@ -270,52 +354,68 @@ bool System::handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned i
     Date startDate("Please provide the start date from when you want to book the house.");
     Date endDate("Please provide the end date from when you want to book the house.");
 
-    if (members[accepterMemberID - 1].viewHouse()->isAvailable(make_pair(startDate, endDate))) {
+    House *house = members[accepterMemberID - 1].viewHouse();
+    house->isAvailable(make_pair(startDate, endDate));
+
+    unsigned int dayAmount = members[accepterMemberID - 1].viewHouse()->isAvailable(make_pair(startDate, endDate));
+    if (dayAmount && members[requesterMemberID - 1].balance >= dayAmount * members[accepterMemberID - 1].viewHouse()->pricePerDay) {
         Request *reqPtr = new Request(requesterMemberID, accepterMemberID, make_pair(startDate, endDate), members[accepterMemberID - 1].viewHouse());
 
         members[accepterMemberID - 1].acceptedRequests.push_back(reqPtr);
         members[requesterMemberID - 1].sentRequests.push_back(reqPtr);
+        requests.push_back(reqPtr);
+
+        members[requesterMemberID - 1].balance -= dayAmount * members[accepterMemberID - 1].viewHouse()->pricePerDay;
 
         cout << "Request has been created successfully.\n";
         return true;
-    }
+    } 
     
-    cout << "Sorry, these dates are unavailable. Please try booking again.\n";
+    cout << "Sorry, these dates are unavailable or you don't have enough balance. Please try booking again.\n";
     return false;
 }
 
 bool System::handleAcceptHouseRequest(unsigned int index) {
-    if (loggedMember != nullptr) {
+    if (index < loggedMember->acceptedRequests.size()) {
         Request *requestToBeAccepted = loggedMember->acceptedRequests[index];
-
-        if (loggedMember->viewHouse()->isAvailable(requestToBeAccepted->requestDateRange)) {
+        
+        unsigned int dayVal = loggedMember->viewHouse()->isAvailable(requestToBeAccepted->requestDateRange);
+        if (dayVal) {
             requestToBeAccepted->isAccepted = true;
-            return true;
+            loggedMember->viewHouse()->makeUnavailable(requestToBeAccepted->requestDateRange);
+            loggedMember->balance += dayVal * loggedMember->viewHouse()->pricePerDay;
             cout << "You have successfully accepted the request.\n";
+            return true;
         } else {
             cout << "You have already chosen another customer for this dates. Cancelling request.\n";
             requestToBeAccepted->isActive = false;
         }
+    } else {
+        cout << "Invalid request index.\n";
     }
 
     return false;
 }
 
 void System::handleAccepterDeclinesHouseRequest(unsigned int index) {
-    if (loggedMember != nullptr) {
+    if (index < loggedMember->acceptedRequests.size()) {
         Request *requestToBeAccepted = loggedMember->acceptedRequests[index];
         requestToBeAccepted->isActive = false;
 
         cout << "Request declined successfully.\n";
+    } else {
+        cout << "Invalid request index.\n";
     }
 }
 
 void System::handleSenderDeclinesHouseRequest(unsigned int index) {
-    if (loggedMember != nullptr) {
+    if (index < loggedMember->acceptedRequests.size()) {
         Request *requestToBeAccepted = loggedMember->sentRequests[index];
         requestToBeAccepted->isActive = false;
 
         cout << "Request declined successfully.\n";
+    } else {
+        cout << "Invalid request index.\n";
     }
 }
 

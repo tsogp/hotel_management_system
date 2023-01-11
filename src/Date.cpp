@@ -28,7 +28,7 @@ Date::Date(string inputMessage) {
         
         do {
             getline(cin, dayVal);
-        } while (dayVal == "0");
+        } while (dayVal == "");
         
         if (!((dayVal.length() == 2 || dayVal.length() == 1) && isStringNumeric(dayVal))) {
             cout << "Incorrect day format, please try again.\n";
@@ -39,7 +39,7 @@ Date::Date(string inputMessage) {
         cout << "Enter the month: "; 
         do {
             getline(cin, monthVal);
-        } while (monthVal == "0");
+        } while (monthVal == "");
         
         if (!((monthVal.length() == 2 || monthVal.length() == 1) && isStringNumeric(monthVal))) {
             cout << "Incorrect month format, please try again.\n";
@@ -50,7 +50,7 @@ Date::Date(string inputMessage) {
         cout << "Enter the year: "; 
         do {
             getline(cin, yearVal);
-        } while (yearVal == "0");
+        } while (yearVal == "");
         
         if (!(yearVal.length() == 4 && isStringNumeric(yearVal))) {
             cout << "Incorrect year format, please try again.\n";

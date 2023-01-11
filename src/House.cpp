@@ -53,17 +53,18 @@ void House::getAvailableDates() {
                 currentMonth++;
             }
         }
-
-        
     }
 }
 
-bool House::isAvailable(pair<Date, Date> dateRange) {
+unsigned int House::isAvailable(pair<Date, Date> dateRange) {
     unsigned short currentDay = dateRange.first.day, 
                    currentMonth = dateRange.first.month,
                    currentYear = dateRange.first.year;
     
+    unsigned int dayAmount = 0;
     while (true) {
+        dayAmount++;
+
         Date currentDate(currentDay, currentMonth, currentYear);
         unsigned short dateConstraintCheckResponse = currentDate.constraintCheck(currentDay, currentMonth, currentYear);
         
@@ -89,7 +90,7 @@ bool House::isAvailable(pair<Date, Date> dateRange) {
         }
     }
 
-    return true;
+    return dayAmount;
 }
 
 void House::makeUnavailable(pair<Date, Date> dateRange) {
