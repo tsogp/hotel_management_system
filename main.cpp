@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     bool exitGuest = false;
     bool exitMember = false;
     bool exitAdmin = false;
+    bool exitRequest = false;
     bool loopGuest = false;
     bool loopMember = false;
     bool loopAdmin = false;
@@ -35,171 +36,224 @@ int main(int argc, char *argv[])
     System *sys = new System();
 
     if (sys != nullptr) {
-        sys->reloadData();
-        sys->reloadHouseData();
-
         while (!exit) {
             cout << "---------------------------------------\n"
                  << "Menu:" << "\n"
                  << "1. Guest" << "\n"
                  << "2. Member" << "\n"
                  << "3. Admin" << "\n"
-                 << "0. Exit" << "\n"
+                 << "0. Exit" << "\n\n"
                  << "-> Please enter your choice: ";
-
+            
             cin >> choice;
 
             switch (choice) {
                 case 1:
+                    exitGuest = false;
+
                     while (!exitGuest) {
                         cout << "\n---------------------------------------\n\n"
                              << "1) View Houses\n"
                              << "2) Register as Member\n"
-                             << "0) Exit\n"
+                             << "0) Exit\n\n"
                              << "-> Please enter your choice: ";
 
                         cin >> choice;
 
                         switch (choice) {
                             case 1:
+                                sys->viewHouses();
                                 break;
                             case 2:
-                                while (!loopGuest) {
-                                    loopGuest = sys->registerMem();
-                                }
+                                sys->registerMem();
                                 break;
                             case 0:
                                 exitGuest = true;
-
                                 break;
                             default:
                                 cout << "Invalid choice." << "\n";
-
                                 break;
                         }                  
                     }          
                     break;
                 case 2:
+                    loopMember = false;
+
                     while (!loopMember) {
-                        sys->loginUser();    
+                        if ((sys->getLoggedMember() != nullptr) || (sys->getLoggedMember() == nullptr && sys->loginUser())) {
+                            cout << "\n---------------------------------------\n\n"
+                                    << "1) View Profile + Ratings\n"
+                                    << "2) Register House\n"
+                                    << "3) Delete House\n"
+                                    << "4) Search House\n"
+                                    << "5) Sent Rent House Request\n"
+                                    << "6) Rate House\n"
+                                    << "7) Rate Person\n"
+                                    << "8) View Rent Requests\n"
+                                    << "9) View Your Rent Requests\n"
+                                    << "0) Exit\n\n"
+                                    << "-> Please enter your choice: ";
 
-                        if (sys->getLoggedMember() != nullptr) {
-                            while (!exitMember) {
-                                cout << "\n---------------------------------------\n\n"
-                                     << "1) View Profile\n"
-                                     << "2) Register House\n"
-                                     << "3) Delete House\n"
-                                     << "4) Search House\n"
-                                     << "5) Rent House\n"
-                                     << "6) Rate House\n"
-                                     << "7) Rate Occupier\n"
-                                     << "8) View Rent Request\n"
-                                     << "9) View Your Rent Requests\n"
-                                     << "0) Exit\n"
-                                     << "-> Please enter your choice: ";
+                            cin >> choice;
 
-                                cin >> choice;
+                            switch (choice) {
+                                case 1:
+                                    sys->getLoggedMember()->viewProfile();
+                                    break;
+                                case 2:
+                                    sys->getLoggedMember()->registerHouse();
+                                    break;
+                                case 3:
+                                    if (sys->getLoggedMember()->viewHouse() != nullptr) {
+                                        sys->getLoggedMember()->deleteHouse();
+                                    } else {
+                                        cout << "You haven't registered a house yet.\n\n";
+                                    }
+                                    break;
+                                case 4:
+                                    sys->viewHouses(sys->getLoggedMember());
+                                    break;  
+                                case 5:
+                                    cout << "Type House ID that you want to book: ";
 
-                                switch (choice) {
-                                    case 1:
-                                        break;
+                                    unsigned int id;
+                                    cin >> id;
 
-                                    case 2:
-                                        sys->getLoggedMember()->registerHouse();
-                                        break;
-                                    case 3:
+                                    sys->handleOccupyHouseRequest(sys->getLoggedMember()->getID(), id);
+                                    break;
+                                case 6:
+                                    sys->handleRateHouse();
+                                    break;
+                                case 7:
+                                    sys->handleRateUser();
+                                    break;
+                                case 8: {
+                                    exitRequest = false;
+                                    bool ifAcceptedRequests = sys->getLoggedMember()->viewAcceptedRequestsInfo();
+                                    
+                                    if (ifAcceptedRequests) {
+                                        while (!exitRequest) {
+                                            sys->getLoggedMember()->viewAcceptedRequestsInfo();
+                                            cout << "---------------------------------------\n\n"
+                                                << "1) Accept Request\n"
+                                                << "2) Decline Request\n"
+                                                << "0) Exit\n\n"
+                                                << "-> Please enter your choice: ";
 
-                                        break;
-                                    case 4:
-                                        sys->viewHouses(sys->getLoggedMember());
-                                        break;  
-                                    case 5:
+                                            cin >> choice;
 
+                                            switch (choice) {
+                                                case 1:
+                                                    unsigned int acceptID;
+                                                    cout << "\nChoose the request ID to accept: ";
+                                                    cin >> acceptID;
+                                                    sys->handleAcceptHouseRequest(acceptID - 1);
+                                                    break;
+                                                case 2:
+                                                    unsigned int declineID;
+                                                    cout << "\nChoose the request ID to decline: ";
+                                                    cin >> declineID;
+                                                    sys->handleAccepterDeclinesHouseRequest(declineID - 1);
+                                                    break;
+                                                case 0:
+                                                    exitRequest = true;
+                                                    break;
+                                                default:
+                                                    cout << "Invalid choice.\n";
+                                                    break;
+                                            }
+                                        }
+                                    } 
+                                    break;
+                                }                          
+                                case 9: {
+                                    exitRequest = false;
+                                    bool ifSentRequests = sys->getLoggedMember()->viewSentRequestsInfo();
 
-                                        break;
+                                    if (ifSentRequests) {
+                                        while (!exitRequest) {
+                                            sys->getLoggedMember()->viewSentRequestsInfo();
+                                            cout << "---------------------------------------\n\n"
+                                                << "1) Cancel Request\n"
+                                                << "0) Exit\n\n"
+                                                << "-> Please enter your choice: ";
 
-                                    case 6:
+                                            cin >> choice;
 
-
-                                        break;
-
-                                    case 7:
-
-
-                                        break;
-
-                                    case 8:
-                                        sys->getLoggedMember()->viewAcceptedRequestsInfo();
-                                        break;                          
-                                    case 9:
-                                        sys->getLoggedMember()->viewSentRequestsInfo();
-                                        break;
-                                    case 0:
-                                        exitMember = true;
-
-                                    default:
-                                        cout << "Invalid choice." << "\n";
-
-                                        break;
-                                }  
+                                            switch (choice) {
+                                                case 1:
+                                                    unsigned int id;
+                                                    cout << "\nChoose the request ID to cancel: ";
+                                                    cin >> id;
+                                                    sys->handleSenderDeclinesHouseRequest(id - 1);
+                                                    break;
+                                                case 0:
+                                                    exitRequest = true;
+                                                    break;
+                                                default:
+                                                    cout << "Invalid choice.\n";
+                                                    break;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                }
+                                case 0:
+                                    loopMember = true;
+                                    break;
+                                default:
+                                    cout << "Invalid choice.\n";
+                                    break;
                             }
                         } else {    
                             loopMember = true;
                         }
                     }
+                    break;
                 case 3:
-                    while (!loopAdmin) {
-                        if (sys->getLoggedMember() != nullptr) { //Please Change this to check for Admin Login) 
-                            while(!exitAdmin) {
+                    loopAdmin = false;
+
+                    while (!loopAdmin) {                        
+                        if (sys->loginAdmin()) { 
+                            while (!loopAdmin) {
                                 cout << "\n---------------------------------------\n\n"
                                      << "1) View House Listing\n"
                                      << "2) View User Profile\n"
-                                     << "0) Exit\n"
+                                     << "0) Exit\n\n"
                                      << "-> Please enter your choice: ";
 
                                 cin >> choice;
 
                                 switch (choice) {
                                     case 1:
-
-
+                                        sys->viewHouses(nullptr, true);
                                         break;
-
                                     case 2:
-
-
+                                        sys->viewUsers();
                                         break;
-
                                     case 0:
-                                        exitAdmin = true;
-
+                                        loopAdmin = true;
+                                        break;
                                     default:
                                         cout << "Invalid choice." << "\n";
-
                                         break;
                                 }  
                             }
                         } else {
-                            cout << "Username or Password did not match. Please try again.";
                             loopAdmin = true;
                         }
                     }
                     break;
-
                 case 0:
                     exit = true;
-
                     break;
-
                 default:
                     cout << "Invalid choice." << "\n";
-
                     break;
             }
         }
     }
     
-
     delete sys;
 
     return 0;

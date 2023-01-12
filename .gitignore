@@ -10,3 +10,5 @@ bin/*
 # Text files
 users.csv
 houses.csv
+requests.csv
+ratings.csv

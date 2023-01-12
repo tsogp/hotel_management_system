@@ -7,6 +7,7 @@
 #define FILENAME "users.csv"
 #define HOUSES_FILENAME "houses.csv"
 #define REQUESTS_FILENAME "requests.csv"
+#define RATINGS_FILENAME "ratings.csv"
 
 unsigned int System::IDCounter = 1;
 
@@ -14,14 +15,24 @@ System::System() {
     reloadData();
     reloadHouseData();
     reloadRequestData();
-    // reloadRatingData();
+    reloadRatingData();
+
+    for (Member &member: members) {
+        if (member.ratings.size() > 0) {
+            member.calculateRating();
+        }
+
+        if (member.viewHouse() != nullptr && member.viewHouse()->ratings.size() > 0) {
+            member.viewHouse()->calculateRating();
+        }
+    }
 };
 
 System::~System() {
+    saveRatingData();
     saveData();
     saveHouseData();
     saveRequestData();
-    // saveRatingData();
 };
 
 
@@ -43,14 +54,14 @@ bool System::saveData() {
 
     for (Member &mem: members) {
         dataFile << mem.ID << '\t' << mem.username << "\t" << mem.password << "\t" 
-                    << mem.name << "\t" << mem.phoneNo << "\n";
+                    << mem.name << "\t" << mem.balance << "\t" << mem.phoneNo << "\n";
     }
 
     dataFile.close();
     return true;
 }
 
-// To Register Memeber
+// To Register Member
 // 1) Try to find if the member username exist or not
 // 2) Ask user to input password, phone no and name
 // 3) Return false until everything is done
@@ -78,9 +89,16 @@ bool System::registerMem() {
             getline(cin, name);
         } while (name == "");
         
-        cout << "Enter your phone number (not empty): ";
         do {
-            getline(cin, phoneNo);
+            while (true) {
+                cout << "Enter your phone number (not empty): ";
+                getline(cin, phoneNo);
+                if (!Date::isStringNumeric(phoneNo)) {
+                    cout << "The number value must only be numeric. Try again.\n";
+                } else {
+                    break;
+                }
+            }
         } while (phoneNo == "");
         
         Member newMember(username, name, password, phoneNo, IDCounter);
@@ -88,7 +106,7 @@ bool System::registerMem() {
         loggedMember = &members.back();
         IDCounter++;
 
-        cout << "Registration complete!\n";
+        cout << "\nRegistration complete! You're also now logged in. Please exit guest mode.\n";
         return true;
     }
     
@@ -130,6 +148,34 @@ bool System::loginUser() {
     }
 }
 
+bool System::loginAdmin() {
+    string username, password; 
+    int position;
+    
+    cout << "Please enter your username: ";
+    do {
+        getline(cin, username);
+    } while (username == "");
+
+    if (username != "admin") {
+        cout << "Wrong admin username!\n";
+        return false;
+    }
+
+    cout << "Please enter your password: ";
+    do {
+        getline(cin, password);
+    } while (password == "");
+
+    if (password == admin.password) {
+        cout << "Welcome back, " << admin.username << "\n";
+        return true;
+    } else {
+        cout << "Username or Password did not match. Please try again.\n";
+        return false;
+    }
+}
+
 // Load all data into their respected class, only to be use at the start of the program
 bool System::reloadData()
 {
@@ -140,19 +186,20 @@ bool System::reloadData()
         return false;
     }
 
-    string username, password, name, phoneNo, ID;
+    string username, password, name, phoneNo, balance, ID;
     while (1) {
         getline(dataFile, ID, '\t');
         getline(dataFile, username, '\t');
         getline(dataFile, password, '\t');
         getline(dataFile, name, '\t');
+        getline(dataFile, balance, '\t');
         getline(dataFile, phoneNo);
         
         if (ID == "") {
             break;
         }
         
-        members.push_back(Member(username, name, password, phoneNo, stoi(ID))); 
+        members.push_back(Member(username, name, password, phoneNo, stoi(ID), stod(balance))); 
     }
     
     IDCounter = members.size() + 1;
@@ -172,9 +219,10 @@ bool System::saveHouseData() {
     for (Member &mem: members) {
         if (mem.house != nullptr) {
             dataFile << mem.ID << '\t' << mem.house->location << '\t' 
-                     << mem.house->description << '\t' << mem.house->pricePerDay << '\t' 
+                     << mem.house->description << '\t' << mem.house->pricePerDay << '\t' << mem.house->minRequiredRating << '\t'
                      << mem.house->availableDateRange.first.stringifyDate(true) << '\t'
                      << mem.house->availableDateRange.second.stringifyDate(true) << '\t';
+
             for (Date &date: mem.house->unavailableDates) {
                 dataFile << date.stringifyDate(true) << '\t';
             }
@@ -203,13 +251,14 @@ bool System::reloadHouseData() {
     while (currentLine != "") {
         string memberID, location, description, pricePerDay,
                firstAvailableDateDay, firstAvailableDateMonth, firstAvailableDateYear,
-               secondAvailableDateDay, secondAvailableDateMonth, secondAvailableDateYear;
+               secondAvailableDateDay, secondAvailableDateMonth, secondAvailableDateYear, minRequiredRating;
         stringstream ss(currentLine);
 
         getline(ss, memberID, '\t');
         getline(ss, location, '\t');
         getline(ss, description, '\t');
         getline(ss, pricePerDay, '\t');
+        getline(ss, minRequiredRating, '\t');
 
         getline(ss, firstAvailableDateDay, '\t');
         getline(ss, firstAvailableDateMonth, '\t');
@@ -236,9 +285,15 @@ bool System::reloadHouseData() {
 
         getline(dataFile, currentLine);
 
-        House *memberHouse = new (std::nothrow) House(stoi(memberID), location, description, make_pair(startDate, endDate), stod(pricePerDay), unavailableDates);
+        House *memberHouse = new (std::nothrow) House(stoi(memberID), location, description, make_pair(startDate, endDate), stod(pricePerDay), stod(minRequiredRating), unavailableDates);
         if (memberHouse != nullptr) {
             members[stoi(memberID) - 1].house = memberHouse;
+            
+            for (Member &member: members) {
+                if (member.ID != stoi(memberID) && stod(minRequiredRating) <= member.rating && stod(pricePerDay) <= member.balance)  {
+                    member.availableHousesToOccupy.push_back(stoi(memberID) - 1);
+                }
+            }
         }
     }
     
@@ -303,54 +358,165 @@ bool System::reloadRequestData() {
         
         getline(dataFile, currentLine);
 
-        Request *reqPtr = new Request(stoi(requesterMemberID), stoi(accepterMemberID), make_pair(startDate, endDate), members[stoi(accepterMemberID) - 1].viewHouse());
+        Request *reqPtr = new Request(stoi(requesterMemberID), stoi(accepterMemberID), make_pair(startDate, endDate), members[stoi(accepterMemberID) - 1].viewHouse(), stoi(isAccepted), stoi(isActive));
 
         members[stoi(accepterMemberID) - 1].acceptedRequests.push_back(reqPtr);
         members[stoi(requesterMemberID) - 1].sentRequests.push_back(reqPtr);
         requests.push_back(reqPtr);
+
+        if (stoi(isAccepted)) {
+            members[stoi(accepterMemberID) - 1].availableUsersToRate.push_back(stoi(requesterMemberID) - 1);
+            
+            members[stoi(requesterMemberID) - 1].availableUsersToRate.push_back(stoi(accepterMemberID) - 1);
+            members[stoi(requesterMemberID) - 1].availableHousesToRate.push_back(stoi(accepterMemberID) - 1);
+        }
     }
     
     dataFile.close();
     return true;
 }
 
-vector<House> System::viewHouses(Member *loggedMember) {
-    vector<House> houses;
+bool System::reloadRatingData() {
+    ifstream dataFile;
+    dataFile.open(RATINGS_FILENAME);
+    
+    if (!dataFile.is_open()) {
+        return false;
+    }
 
-    cout << "Here are the available houses:\n\n";
+    string currentLine;
+    getline(dataFile, currentLine);
 
-    if (loggedMember == nullptr) {
-        cout << "You're viewing the houses in guest mode. No reviews or available dates are shown.\n\n";
+    while (currentLine != "") {
+        string ID, message, raterName, rating, ratingForHouse;
+        stringstream ss(currentLine);
+
+        getline(ss, ID, '\t');
+        getline(ss, raterName, '\t');
+        getline(ss, message, '\t');
+        getline(ss, rating, '\t');
+        getline(ss, ratingForHouse, '\t');
         
-        for (Member &mem: members) {
-            if (mem.house != nullptr) {
-                cout << "House ID: " << mem.house->memberID << '\n'
-                     << "Owner name: " << mem.name << '\n'
-                     << "Location: " << mem.house->location << '\n'
-                     << "Description: " << mem.house->description << '\n'
-                     << "Daily price: " << mem.house->pricePerDay << "\n\n";
-            }
+        getline(dataFile, currentLine);
+        
+        if (stoi(ratingForHouse)) {
+            members[stoi(ID) - 1].viewHouse()->ratings.push_back(Rating(stoi(ID), raterName, message, stoi(rating)));
+        } else {
+            members[stoi(ID) - 1].ratings.push_back(Rating(stoi(ID), raterName, message, stoi(rating), false));
         }
-    } else {
-        for (Member &mem: members) {
-            if (mem.house != nullptr) {
-                houses.push_back(*(mem.house));
-                cout << "House ID: " << mem.house->memberID << '\n'
-                     << "Owner name: " << mem.name << '\n'
-                     << "Location: " << mem.house->location << '\n'
-                     << "Description: " << mem.house->description << '\n'
-                     << "Daily price: " << mem.house->pricePerDay << '\n'
-                     << "Availbale dates:\n";
-                mem.house->getAvailableDates();
-                cout << "\n\n";
+    }
+    
+    dataFile.close();
+    return true;
+}
+
+bool System::saveRatingData() {
+    ofstream dataFile;
+    dataFile.open(RATINGS_FILENAME);
+
+    if (!dataFile.is_open()) {
+        return false;
+    }
+
+    for (Member &member: members) {
+        for (Rating &rating: member.ratings) {
+            dataFile << rating.ID << '\t' << rating.raterName << '\t' 
+                     << rating.message << '\t' << rating.rating << '\t' 
+                     << rating.ratingForHouse << '\n';
+        }
+
+        if (member.viewHouse() != nullptr) {
+            for (Rating &rating: member.viewHouse()->ratings) {
+                dataFile << rating.ID << '\t' << rating.raterName << '\t' 
+                            << rating.message << '\t' << rating.rating << '\t' 
+                            << rating.ratingForHouse << '\n';
             }
         }
     }
 
-    return houses;
+    dataFile.close();
+    return true;
+}
+
+void System::viewHouses(Member *loggedMember, bool isAdmin) {
+    cout << "Here are the available houses:\n\n";
+    bool isEmpty = true;
+
+    if (loggedMember == nullptr && !isAdmin) {
+        cout << "You're viewing the houses in guest mode. No reviews or available dates are shown.\n\n";
+        
+        for (Member &mem: members) {
+            if (mem.house != nullptr) {
+                isEmpty = false;
+                cout << "House ID: " << mem.house->memberID << '\n'
+                     << "Owner name: " << mem.name << '\n'
+                     << "Location: " << mem.house->location << '\n'
+                     << "Description: " << mem.house->description << '\n'
+                     << "Daily price: " << mem.house->pricePerDay << "\n";
+            }
+        }
+    } else {
+        string ifWantsLocation;
+        cout << "Would you like to choose a particular location for the house (type yes for yes, anything else for for no)?\n";
+        
+        do {
+            getline (cin, ifWantsLocation);
+        } while (ifWantsLocation == "");
+
+        string locationChoice, location;
+
+        if (ifWantsLocation == "yes") {
+            while (true) {
+                string locationChoice;
+                cout << "Choose the city of the house (type 1, 2 or 3): \n"
+                    << "1. Sai Gon\n"
+                    << "2. Hanoi\n"   
+                    << "3. Hue\n";
+                
+                do {
+                    getline(cin, locationChoice);
+                } while (locationChoice == "");
+                
+                if (locationChoice == "1" || locationChoice == "2" || locationChoice == "3") {
+                    location = (locationChoice == "1") ? "Sai Gon" : (locationChoice == "2") ? "Hanoi" : "Hue";
+                    break;
+                } else {
+                    cout << "Incorrect input, please try again.\n";
+                }
+            }
+        }
+
+        for (Member &mem: members) {
+            if (mem.house != nullptr && mem.house->memberID != loggedMember->ID && mem.house->minRequiredRating <= loggedMember->rating && mem.house->pricePerDay <= loggedMember->balance) {
+                if (ifWantsLocation == "yes") {
+                    if (mem.house->location == location) {
+                        isEmpty = false;
+                        cout << "House ID: " << mem.house->memberID << '\n'
+                             << "Owner name: " << mem.name << '\n';
+                        mem.house->viewHouseInfo(); 
+                    }
+                } else {
+                    isEmpty = false;
+                    cout << "House ID: " << mem.house->memberID << '\n'
+                         << "Owner name: " << mem.name << '\n';
+                    mem.house->viewHouseInfo();   
+                }
+            }
+        }
+    }
+
+    if (isEmpty) {
+        cout << "Sorry, there're currently no suitable houses for you. Try again later.\n";
+    }
 }
 
 bool System::handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned int accepterMemberID) {
+    vector<unsigned int>::iterator ifRequesterCanOccupy = find(members[requesterMemberID - 1].availableHousesToOccupy.begin(), members[requesterMemberID - 1].availableHousesToOccupy.end(), accepterMemberID - 1);
+    if (ifRequesterCanOccupy == members[requesterMemberID - 1].availableHousesToOccupy.end()) {
+        cout << "You can't send request for this house.\n";
+        return false;
+    }
+
     Date startDate("Please provide the start date from when you want to book the house.");
     Date endDate("Please provide the end date from when you want to book the house.");
 
@@ -358,14 +524,12 @@ bool System::handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned i
     house->isAvailable(make_pair(startDate, endDate));
 
     unsigned int dayAmount = members[accepterMemberID - 1].viewHouse()->isAvailable(make_pair(startDate, endDate));
-    if (dayAmount && members[requesterMemberID - 1].balance >= dayAmount * members[accepterMemberID - 1].viewHouse()->pricePerDay) {
+    if (dayAmount) {
         Request *reqPtr = new Request(requesterMemberID, accepterMemberID, make_pair(startDate, endDate), members[accepterMemberID - 1].viewHouse());
 
         members[accepterMemberID - 1].acceptedRequests.push_back(reqPtr);
         members[requesterMemberID - 1].sentRequests.push_back(reqPtr);
         requests.push_back(reqPtr);
-
-        members[requesterMemberID - 1].balance -= dayAmount * members[accepterMemberID - 1].viewHouse()->pricePerDay;
 
         cout << "Request has been created successfully.\n";
         return true;
@@ -383,7 +547,10 @@ bool System::handleAcceptHouseRequest(unsigned int index) {
         if (dayVal) {
             requestToBeAccepted->isAccepted = true;
             loggedMember->viewHouse()->makeUnavailable(requestToBeAccepted->requestDateRange);
+
             loggedMember->balance += dayVal * loggedMember->viewHouse()->pricePerDay;
+            members[requestToBeAccepted->requesterMemberID - 1].balance -= dayVal * loggedMember->viewHouse()->pricePerDay;
+
             cout << "You have successfully accepted the request.\n";
             return true;
         } else {
@@ -400,6 +567,24 @@ bool System::handleAcceptHouseRequest(unsigned int index) {
 void System::handleAccepterDeclinesHouseRequest(unsigned int index) {
     if (index < loggedMember->acceptedRequests.size()) {
         Request *requestToBeAccepted = loggedMember->acceptedRequests[index];
+        if (requestToBeAccepted->isAccepted) {
+            cout << "\nThis request is already accepted, can't cancel it.\n\n";
+            return;
+        }
+        requestToBeAccepted->isActive = false;
+        cout << "Request declined successfully.\n";
+    } else {
+        cout << "Invalid request index.\n";
+    }
+}
+
+void System::handleSenderDeclinesHouseRequest(unsigned int index) {
+    if (index < loggedMember->sentRequests.size()) {
+        Request *requestToBeAccepted = loggedMember->sentRequests[index];
+        if (requestToBeAccepted->isAccepted) {
+            cout << "\nThis request is already accepted, can't cancel it.\n\n";
+            return;
+        }
         requestToBeAccepted->isActive = false;
 
         cout << "Request declined successfully.\n";
@@ -408,14 +593,92 @@ void System::handleAccepterDeclinesHouseRequest(unsigned int index) {
     }
 }
 
-void System::handleSenderDeclinesHouseRequest(unsigned int index) {
-    if (index < loggedMember->acceptedRequests.size()) {
-        Request *requestToBeAccepted = loggedMember->sentRequests[index];
-        requestToBeAccepted->isActive = false;
+bool System::handleRateUser() {
+    string IDVal, message, rating;
 
-        cout << "Request declined successfully.\n";
-    } else {
-        cout << "Invalid request index.\n";
+    do {
+        cout << "Type the ID of the house it's owner: ";
+        getline(cin, IDVal);
+    } while (IDVal == "");
+
+    vector<unsigned int>::iterator ifRequesterCanRate = find(members[loggedMember->ID - 1].availableUsersToRate.begin(), members[loggedMember->ID - 1].availableUsersToRate.end(), stoi(IDVal) - 1);
+    if (!(Date::isStringNumeric(IDVal) && ifRequesterCanRate != members[loggedMember->ID - 1].availableUsersToRate.end())) {
+        cout << "Incorrect ID value, please try again. You can only rate users that have approved your housing request or have been approved by you.\n";
+        return false;
+    } 
+
+    do {
+        cout << "Type rating message: ";
+        getline(cin, message);
+    } while (message == "");
+
+    do {
+        cout << "Type rating value: ";
+        getline(cin, rating);
+    } while (rating == "");
+
+    if (!(Date::isStringNumeric(rating) && stoi(rating) >= -10 && stoi(rating) <= 10)) {
+        cout << "Incorrect rating value, please choose an integer from -10 to 10.\n";
+        return false;
+    } 
+    
+    string name = loggedMember->name;
+
+    members[stoi(IDVal) - 1].ratings.push_back(Rating(stoi(IDVal), name, message, stoi(rating), false));
+    members[stoi(IDVal) - 1].calculateRating();
+    return true;
+}
+
+bool System::handleRateHouse() {
+    string IDVal, message, rating;
+
+    do {
+        cout << "Type the house ID to rate it: ";
+        getline(cin, IDVal);
+    } while (IDVal == "");
+
+    vector<unsigned int>::iterator ifRequesterCanRate = find(members[loggedMember->ID - 1].availableHousesToRate.begin(), members[loggedMember->ID - 1].availableHousesToRate.end(), stoi(IDVal) - 1);
+    if (!(Date::isStringNumeric(IDVal) && ifRequesterCanRate != members[loggedMember->ID - 1].availableHousesToRate.end())) {
+        cout << "Incorrect ID value, please try again. You can only rate houses that have been approved for you to use.\n";
+        return false;
+    } 
+
+    do {
+        cout << "Type rating message: ";
+        getline(cin, message);
+    } while (message == "");
+
+    do {
+        cout << "Type rating value: ";
+        getline(cin, rating);
+    } while (rating == "");
+
+    if (!(Date::isStringNumeric(rating) && stoi(rating) >= -10 && stoi(rating) <= 10)) {
+        cout << "Incorrect rating value, please choose an integer from -10 to 10.\n";
+        return false;
+    } 
+    
+    string name = loggedMember->name;
+
+    members[stoi(IDVal) - 1].viewHouse()->ratings.push_back(Rating(stoi(IDVal), name, message, stoi(rating), true));
+    members[stoi(IDVal) - 1].viewHouse()->calculateRating();
+    return true;
+}
+
+void System::viewUsers() {
+    for (Member &member: members) {
+        cout << "Username: " << member.username << '\n'
+             << "Name: " << member.name << '\n'
+             << "Password: " << member.password << '\n'
+             << "Phone Number: " << member.phoneNo << "\n"
+             << "Balance: " << member.balance << '\n'
+             << "Rating: " << member.rating << "\n\n";
+        if (member.ratings.size() > 0) {
+            cout << "Member ratings: \n";
+            for (Rating &rating: member.ratings) {
+                rating.viewRatingInfo();
+            }
+        }
     }
 }
 

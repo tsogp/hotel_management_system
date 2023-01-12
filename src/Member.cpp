@@ -3,8 +3,8 @@
 
 #include "../include/Member.hpp"
 
-Member::Member(string usernameVal, string nameVal, string passwordVal, string phoneNoVal, unsigned int IDVal) 
-    : username(usernameVal), name(nameVal), password(passwordVal), phoneNo(phoneNoVal), ID(IDVal) {};
+Member::Member(string usernameVal, string nameVal, string passwordVal, string phoneNoVal, unsigned int IDVal, int balanceVal) 
+    : username(usernameVal), name(nameVal), password(passwordVal), phoneNo(phoneNoVal), ID(IDVal), balance(balanceVal) {};
 
 unsigned int Member::getID() {
     return ID;
@@ -14,9 +14,18 @@ void Member::viewProfile() {
     cout << "Username: " << username << '\n'
          << "Name: " << name << '\n'
          << "Password: " << password << '\n'
-         << "Phone Number: " << phoneNo << "\n\n"
-         << "House info: \n";
+         << "Phone Number: " << phoneNo << "\n"
+         << "Balance: " << balance << '\n'
+         << "Rating: " << rating << "\n\n";
+    if (ratings.size() > 0) {
+        cout << "House ratings: \n";
+        for (Rating &rating: ratings) {
+            rating.viewRatingInfo();
+        }
+    }
+
     if (viewHouse() != nullptr) {
+        cout << "House info: \n";
         viewHouse()->viewHouseInfo();
     }
 }
@@ -27,7 +36,9 @@ bool Member::registerHouse() {
         return false;
     }
 
-    string description = "", location = "", price = "";
+    cout << "House can be available from 1/1/2023 to 31/12/2030\n\n";
+
+    string description = "", location = "", price = "", minRequiredRating = "";
 
     while (true) {
         string locationChoice;
@@ -65,21 +76,18 @@ bool Member::registerHouse() {
     Date startDate("Now enter the start date when your house is available.");
     Date endDate("Now enter the end date when your house is available.");
 
-    while (true) {
-        cout << "Enter daily price for the house (please use . as digit divider): \n";
-        do {
-            getline(cin, price);
-        } while (price == "");
-        
-        if (price.find('.') == -1) {
-            cout << "Incorrect input for the price value, please try again.";
-            price = "";
-        } else {
-            break;
-        }
-    }
+    cout << "Enter daily price for the house (please use . as digit divider): ";
+    do {
+        getline(cin, price);
+    } while (price == "");
 
-    House *housePtr = new House(this->ID, location, description, {startDate, endDate}, stod(price));
+    cout << "Enter minimum required rating for the guest (please use . as digit divider): ";
+    do {
+        getline(cin, minRequiredRating);
+    } while (price == "");
+
+
+    House *housePtr = new House(this->ID, location, description, {startDate, endDate}, stod(price), stod(minRequiredRating));
     if (housePtr != nullptr) {
         house = housePtr;
     } else {
@@ -101,39 +109,52 @@ void Member::deleteHouse() {
 
     delete house;
     this->house = nullptr;
-    cout << "House unlisted successfully.\n\n";
+    cout << "House unlisted successfully.\n";
 }
 
-void Member::viewSentRequestsInfo() {
+bool Member::viewSentRequestsInfo() {
     if (sentRequests.size() != 0) {
         for (int i = 0; i < sentRequests.size(); i++) {
             cout << "ID: " << i + 1 << '\n'
                  << "Location range: " << sentRequests[i]->requestDateRange.first.stringifyDate() << " to " << sentRequests[i]->requestDateRange.second.stringifyDate() << "\n\n";
-            sentRequests[i]->house->viewHouseInfo();
+            cout << "Location: " << sentRequests[i]->house->location << '\n'
+                 << "Description: " << sentRequests[i]->house->description << '\n'
+                 << "Daily price: " << sentRequests[i]->house->pricePerDay << '\n'
+                 << "Is accepted: " << sentRequests[i]->isAccepted << "\n\n";
         }
     } else {
         cout << "You have no sent requests.\n\n";
+        return false;
     }
+
+    return true;
 }
 
-void Member::viewAcceptedRequestsInfo() {
+bool Member::viewAcceptedRequestsInfo() {
     if (acceptedRequests.size() != 0) {
         for (int i = 0; i < acceptedRequests.size(); i++) {
             cout << "ID: " << i + 1 << '\n'
                  << "Location range: " << acceptedRequests[i]->requestDateRange.first.stringifyDate() << " to " << acceptedRequests[i]->requestDateRange.second.stringifyDate() << "\n\n";
-            acceptedRequests[i]->house->viewHouseInfo();
+            cout << "Location: " << acceptedRequests[i]->house->location << '\n'
+                 << "Description: " << acceptedRequests[i]->house->description << '\n'
+                 << "Daily price: " << acceptedRequests[i]->house->pricePerDay << '\n'
+                 << "Is accepted: " << acceptedRequests[i]->isAccepted << "\n\n";
         }
     } else {
         cout << "You have no incoming requests.\n\n";
+        return false;
     }
+
+    return true;
 }
 
-bool Member::rateAHouse() {
+void Member::calculateRating() {
+    double averageRating = 0.0;
+    for (Rating &rating: ratings) {
+        averageRating += rating.rating;
+    }
 
-}
-
-bool Member::rateAnOwner() {
-
+    rating = averageRating / ratings.size();
 }
 
 #endif

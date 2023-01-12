@@ -23,6 +23,8 @@ using std::stod;
 class Member {
 private:
     unsigned int ID;
+    int balance;
+    double rating = 0.0;
     string username;
     string name;
     string password;
@@ -30,19 +32,26 @@ private:
     House *house = nullptr;
     vector<Request*> sentRequests;
     vector<Request*> acceptedRequests;
+    vector<Rating> ratings;
+    vector<unsigned int> availableUsersToRate;
+    vector<unsigned int> availableHousesToRate;
+    vector<unsigned int> availableHousesToOccupy;
 public:
     // Will include House class for the user to add later 
-    Member(string usernameVal = "", string nameVal = "", string passwordVal = "", string phoneNoVal = "", unsigned int IDVal = 0);
+    Member(string usernameVal = "", string nameVal = "", string passwordVal = "", string phoneNoVal = "", unsigned int IDVal = 0, int balanceVal = 500);
     
+    unsigned int getID();
+
+    void viewProfile();
+
     bool registerHouse();
     House* viewHouse();
     void deleteHouse();
 
-    void viewSentRequestsInfo();
-    void viewAcceptedRequestsInfo();
+    bool viewSentRequestsInfo();
+    bool viewAcceptedRequestsInfo();
 
-    bool rateAHouse();
-    bool rateAnOwner();
+    void calculateRating();
 
     friend class System;
     friend class Request;

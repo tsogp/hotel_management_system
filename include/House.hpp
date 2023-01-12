@@ -14,13 +14,18 @@ using std::make_pair;
 using std::vector;
 
 #include "Date.hpp"
+#include "Rating.hpp"
+
 class House {
     private:
         unsigned int memberID;
+        double rating = 0.0;
+        double minRequiredRating = 0.0;
         string location;
         string description;
         pair<Date, Date> availableDateRange;
         vector<Date> unavailableDates;
+        vector<Rating> ratings;
         double pricePerDay;
     public:
         House(
@@ -29,6 +34,7 @@ class House {
             string descriptionVal, 
             pair<Date, Date> availableDateRangeVal, 
             double priceVal,
+            double minRequiredRating,
             vector<Date> unavailableDatesVal = {}
         );
 
@@ -36,9 +42,10 @@ class House {
         friend class System;
         friend class Request;
 
+        void calculateRating();
         void getAvailableDates();
         void viewHouseInfo();
-        bool isAvailable(pair<Date, Date> dateRange);
+        unsigned int isAvailable(pair<Date, Date> dateRange);
         void makeUnavailable(pair<Date, Date> dateRange);
 };
 

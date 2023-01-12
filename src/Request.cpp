@@ -3,7 +3,7 @@
 
 #include "../include/Request.hpp"
 
-Request::Request(unsigned int requesterMemberIDVal, unsigned int accepterMemberIDVal, pair<Date, Date> requestDateRangeVal, House* houseVal) 
-    : requesterMemberID(requesterMemberIDVal), accepterMemberID(accepterMemberIDVal), requestDateRange(requestDateRangeVal), house(houseVal) {};
+Request::Request(unsigned int requesterMemberIDVal, unsigned int accepterMemberIDVal, pair<Date, Date> requestDateRangeVal, House* houseVal, bool isAcceptedVal, bool isActiveVal) 
+    : requesterMemberID(requesterMemberIDVal), accepterMemberID(accepterMemberIDVal), requestDateRange(requestDateRangeVal), house(houseVal), isAccepted(isAcceptedVal), isActive(isActiveVal) {};
 
 #endif

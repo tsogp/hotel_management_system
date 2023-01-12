@@ -21,6 +21,8 @@ public:
 
     friend class House;
 
+    static bool isStringNumeric(const string& str);
+
     bool constraintCheck(unsigned short dayVal, unsigned short monthVal, unsigned short yearVal, bool isErrorMessageNeeded = false);
     void defaultErrorMessage();
     string stringifyDate(bool forIO = false);

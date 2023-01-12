@@ -3,7 +3,7 @@
 
 #include "../include/Date.hpp"
 
-bool isStringNumeric(const string& str) {
+bool Date::isStringNumeric(const string& str) {
     string::const_iterator it = str.begin();
     while (it != str.end() && std::isdigit(*it)) {
         ++it;

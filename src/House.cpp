@@ -13,12 +13,14 @@ House::House(
     string descriptionVal, 
     pair<Date, Date> availableDateRangeVal, 
     double priceVal,
+    double minRequiredRating,
     vector<Date> unavailableDatesVal
 ) : memberID(memberIDVal),
     location(locationVal), 
     description(descriptionVal), 
     availableDateRange(availableDateRangeVal), 
     pricePerDay(priceVal),
+    minRequiredRating(minRequiredRating),
     unavailableDates(unavailableDatesVal) {};
 
 void House::getAvailableDates() {
@@ -38,8 +40,11 @@ void House::getAvailableDates() {
             }
         }
 
-        if (dateConstraintCheckResponse && !isCurrentDateIsUnavailable) {
-            cout << currentDate.stringifyDate() << '\n';
+        if (dateConstraintCheckResponse) {
+            if (!isCurrentDateIsUnavailable) {
+                cout << currentDate.stringifyDate() << '\n';
+            }
+
             if (currentDay == availableDateRange.second.day && currentMonth == availableDateRange.second.month && currentYear == availableDateRange.second.year) {
                 break;
             }
@@ -73,6 +78,12 @@ unsigned int House::isAvailable(pair<Date, Date> dateRange) {
                 return false;
             }
         }
+
+        if (currentDay > availableDateRange.second.day && currentMonth == availableDateRange.second.month && currentYear == availableDateRange.second.year
+            || currentMonth > availableDateRange.second.month && currentYear == availableDateRange.second.year
+            || currentYear > availableDateRange.second.year) {
+                return false;
+            }
 
         if (dateConstraintCheckResponse) {
             if (currentDay == dateRange.second.day && currentMonth == dateRange.second.month && currentYear == dateRange.second.year) {
@@ -124,7 +135,26 @@ void House::makeUnavailable(pair<Date, Date> dateRange) {
 void House::viewHouseInfo() {
     cout << "Location: " << location << '\n'
          << "Description: " << description << '\n'
-         << "Daily price: " << pricePerDay << "\n\n";
+         << "Daily price: " << pricePerDay << '\n'
+         << "Rating: " << rating << '\n'
+         << "Minimal required rating: " << minRequiredRating << "\n\n"
+         << "Available dates: \n";
+    getAvailableDates();
+    if (ratings.size() > 0) {
+        cout << "House ratings: \n";
+        for (Rating &rating: ratings) {
+            rating.viewRatingInfo();
+        }
+    }
+}
+
+void House::calculateRating() {
+    double averageRating = 0.0;
+    for (Rating &rating: ratings) {
+        averageRating += rating.rating;
+    }
+
+    rating = averageRating / ratings.size();
 }
 
 #endif
