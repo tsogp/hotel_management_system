@@ -47,7 +47,7 @@ Date::Date(string inputMessage) {
             yearVal = "0";
             continue;
         }
-    } while (!constraintCheck(stoi(dayVal), stoi(monthVal), stoi(yearVal)) && (dayVal == "0" || monthVal == "0" || yearVal == "0"));
+    } while (!constraintCheck(stoi(dayVal), stoi(monthVal), stoi(yearVal)) || (dayVal == "0" || monthVal == "0" || yearVal == "0"));
 
     day = stoi(dayVal);
     month = stoi(monthVal);
@@ -70,7 +70,7 @@ bool Date::isStringNumeric(const string& str) {
 bool Date::constraintCheck(unsigned short dayVal, unsigned short monthVal, unsigned short yearVal, bool isErrorMessageNeeded) {
     // Booking is only available between 2023 and 2030
     if (!(yearVal <= 2030 && yearVal >= 2023) || !(monthVal <= 12 && monthVal >= 1) || !(dayVal <= 31 && dayVal >= 1)) {
-        if (!isErrorMessageNeeded) {
+        if (isErrorMessageNeeded) {
             defaultErrorMessage();
         }
         return false;
@@ -79,7 +79,7 @@ bool Date::constraintCheck(unsigned short dayVal, unsigned short monthVal, unsig
     if (monthVal == 2) {
         if (isYearLeap(yearVal)) {
             if (!(dayVal <= 29)) {
-                if (!isErrorMessageNeeded) {
+                if (isErrorMessageNeeded) {
                     defaultErrorMessage();
                 }
                 return false;
@@ -88,7 +88,7 @@ bool Date::constraintCheck(unsigned short dayVal, unsigned short monthVal, unsig
             }
         } else {
             if (!(dayVal <= 28)) {
-                if (!isErrorMessageNeeded) {
+                if (isErrorMessageNeeded) {
                     defaultErrorMessage();
                 }
                 return false;
@@ -100,7 +100,7 @@ bool Date::constraintCheck(unsigned short dayVal, unsigned short monthVal, unsig
 
     if (monthVal == 4 || monthVal == 6 || monthVal == 9 || monthVal == 11) {
         if (!(dayVal <= 30)) {
-            if (!isErrorMessageNeeded) {
+            if (isErrorMessageNeeded) {
                 defaultErrorMessage();
             }
             return false;
