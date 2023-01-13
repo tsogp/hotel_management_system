@@ -28,6 +28,7 @@ public:
     string stringifyDate(bool forIO = false);
 
     friend bool operator == (Date &, Date &);
+    friend bool operator > (Date &, Date &);
 };
 
 #endif

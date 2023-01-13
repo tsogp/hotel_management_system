@@ -62,6 +62,10 @@ void House::getAvailableDates() {
 }
 
 unsigned int House::isAvailable(pair<Date, Date> dateRange) {
+    if (dateRange.first > dateRange.second) {
+        return false;
+    }
+
     unsigned short currentDay = dateRange.first.day, 
                    currentMonth = dateRange.first.month,
                    currentYear = dateRange.first.year;
@@ -78,12 +82,6 @@ unsigned int House::isAvailable(pair<Date, Date> dateRange) {
                 return false;
             }
         }
-
-        if (currentDay > availableDateRange.second.day && currentMonth == availableDateRange.second.month && currentYear == availableDateRange.second.year
-            || currentMonth > availableDateRange.second.month && currentYear == availableDateRange.second.year
-            || currentYear > availableDateRange.second.year) {
-                return false;
-            }
 
         if (dateConstraintCheckResponse) {
             if (currentDay == dateRange.second.day && currentMonth == dateRange.second.month && currentYear == dateRange.second.year) {
