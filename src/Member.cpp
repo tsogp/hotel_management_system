@@ -3,6 +3,7 @@
 
 #include "../include/Member.hpp"
 
+// Helper function to validate double type input
 void handleDoubleInput(double &value, string error_msg = "Please enter a double number and use . as a divider: ") {
     cin >> value;
     while (cin.fail()) {
@@ -13,13 +14,16 @@ void handleDoubleInput(double &value, string error_msg = "Please enter a double 
     }
 }
 
+// Default constructor of the class
 Member::Member(string usernameVal, string nameVal, string passwordVal, string phoneNoVal, unsigned int IDVal, int balanceVal) 
     : username(usernameVal), name(nameVal), password(passwordVal), phoneNo(phoneNoVal), ID(IDVal), balance(balanceVal) {};
 
+// Getter function for the member ID 
 unsigned int Member::getID() {
     return ID;
 }
 
+// Function to show the basic info about the member
 void Member::viewProfile() {
     cout << "Username: " << username << '\n'
          << "Name: " << name << '\n'
@@ -40,6 +44,7 @@ void Member::viewProfile() {
     }
 }
 
+// Function to list a house for a user
 bool Member::registerHouse() {
     if (house != nullptr) {
         cout << "You have already listed a house!\n";
@@ -108,10 +113,12 @@ bool Member::registerHouse() {
     return true;
 }
 
+// Getter function for the house object pointer
 House* Member::viewHouse() {
     return this->house;
 }
 
+// Function to delete the house and free the memory
 void Member::deleteHouse() {
     for (Request *request: acceptedRequests) {
         if (request->isAccepted) {
@@ -125,6 +132,7 @@ void Member::deleteHouse() {
     cout << "House unlisted successfully.\n";
 }
 
+// Function to view member's sent requests
 bool Member::viewSentRequestsInfo() {
     if (sentRequests.size() != 0) {
         for (int i = 0; i < sentRequests.size(); i++) {
@@ -144,6 +152,7 @@ bool Member::viewSentRequestsInfo() {
     return true;
 }
 
+// Function to view member's accepted requests
 bool Member::viewAcceptedRequestsInfo() {
     if (acceptedRequests.size() != 0) {
         for (int i = 0; i < acceptedRequests.size(); i++) {
@@ -163,6 +172,7 @@ bool Member::viewAcceptedRequestsInfo() {
     return true;
 }
 
+// Function to calculate member's rating
 void Member::calculateRating() {
     double averageRating = 0.0;
     for (Rating &rating: ratings) {

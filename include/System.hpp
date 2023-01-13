@@ -40,10 +40,7 @@ class System {
         bool registerMem();
         bool loginUser();
         bool loginAdmin();
-
-        void viewUsers();
-        void viewHouses(Member *loggedMember = nullptr, bool isAdmin = false);
-        
+       
         bool saveData();
         bool reloadData();
         bool saveHouseData();
@@ -53,6 +50,9 @@ class System {
         bool saveRatingData();
         bool reloadRatingData();
 
+        void viewUsers();
+        void viewHouses(Member *loggedMember = nullptr, bool isAdmin = false);
+ 
         bool handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned int accepterMemberID);
         bool handleAcceptHouseRequest(unsigned int index);
         void handleAccepterDeclinesHouseRequest(unsigned int index);

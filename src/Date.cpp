@@ -3,22 +3,12 @@
 
 #include "../include/Date.hpp"
 
-bool Date::isStringNumeric(const string& str) {
-    string::const_iterator it = str.begin();
-    while (it != str.end() && std::isdigit(*it)) {
-        ++it;
-    } 
-    return it == str.end();
-}
-
+// Function to check in the year is leap
 bool isYearLeap(unsigned short year) {
     return ((!(year % 4) && (year % 100) || !(year % 400)));
 }
 
-void Date::defaultErrorMessage() {
-    cout << "Your date format is invalid. Please try again.\n";
-};
-
+// Default constructor of the Date class
 Date::Date(string inputMessage) {
     string dayVal = "0", monthVal = "0", yearVal = "0";
 
@@ -64,9 +54,19 @@ Date::Date(string inputMessage) {
     year = stoi(yearVal);
 };
 
+// Overloaded constructor of the Date class with date attributes (day, month, year) provided
 Date::Date(unsigned short dayVal, unsigned short monthVal, unsigned short yearVal)
     : day(dayVal), month(monthVal), year(yearVal) {};
 
+bool Date::isStringNumeric(const string& str) {
+    string::const_iterator it = str.begin();
+    while (it != str.end() && std::isdigit(*it)) {
+        ++it;
+    } 
+    return it == str.end();
+}
+
+// Function to check if this date exists
 bool Date::constraintCheck(unsigned short dayVal, unsigned short monthVal, unsigned short yearVal, bool isErrorMessageNeeded) {
     // Booking is only available between 2023 and 2030
     if (!(yearVal <= 2030 && yearVal >= 2023) || !(monthVal <= 12 && monthVal >= 1) || !(dayVal <= 31 && dayVal >= 1)) {
@@ -112,15 +112,23 @@ bool Date::constraintCheck(unsigned short dayVal, unsigned short monthVal, unsig
     return true;
 }
 
+// Function to print out the default error message for invalid date.
+void Date::defaultErrorMessage() {
+    cout << "Your date format is invalid. Please try again.\n";
+};
+
+// Function to stringiry Date object either for console or file output
 string Date::stringifyDate(bool forIO) {
     char divSymbol = (forIO) ? '\t' : '/';
     return to_string(day) + divSymbol + to_string(month) + divSymbol + to_string(year);
 }
 
+// Overloaded operator to check if two Date objects are equal
 bool operator == (Date &date1, Date &date2) {
     return date1.day == date2.day && date1.month == date2.month && date1.year == date2.year; 
 }
 
+// Overloaded operator to check if the first Date object is greater
 bool operator > (Date &date1, Date &date2) {
     return (
         (date1.day > date2.day && date1.month == date2.month && date1.year == date2.year)

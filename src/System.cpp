@@ -11,6 +11,7 @@
 
 unsigned int System::IDCounter = 1;
 
+// System constructor
 System::System() {
     reloadData();
     reloadHouseData();
@@ -28,6 +29,7 @@ System::System() {
     }
 };
 
+// System destructor
 System::~System() {
     saveRatingData();
     saveData();
@@ -35,7 +37,7 @@ System::~System() {
     saveRequestData();
 };
 
-
+// Function to find member by their name
 int System::findMember(string username) {
     for (int i = 0; i < members.size(); i++) {
         if (members[i].username == username) {
@@ -45,26 +47,7 @@ int System::findMember(string username) {
     return -1;
 }
 
-// Data saving function, only use when closing out of the program
-bool System::saveData() {
-    ofstream dataFile(FILENAME);
-    if (!dataFile.is_open()) {
-        return false;
-    }
-
-    for (Member &mem: members) {
-        dataFile << mem.ID << '\t' << mem.username << "\t" << mem.password << "\t" 
-                    << mem.name << "\t" << mem.balance << "\t" << mem.phoneNo << "\n";
-    }
-
-    dataFile.close();
-    return true;
-}
-
-// To Register Member
-// 1) Try to find if the member username exist or not
-// 2) Ask user to input password, phone no and name
-// 3) Return false until everything is done
+// Function to register member
 bool System::registerMem() {
     string username;
     cout << "Input your username (not empty): ";
@@ -111,10 +94,7 @@ bool System::registerMem() {
     
 }
 
-// Login Function 
-// 1) Find if the user name exist or not
-// 2) IF found, check if username and password matches
-// 3) Return true if done
+// Function to login user
 bool System::loginUser() {
     string username, password; 
     int position;
@@ -147,6 +127,7 @@ bool System::loginUser() {
     }
 }
 
+// Function to login admin
 bool System::loginAdmin() {
     string username, password; 
     int position;
@@ -175,7 +156,23 @@ bool System::loginAdmin() {
     }
 }
 
-// Load all data into their respected class, only to be use at the start of the program
+// Function to save the data about the user
+bool System::saveData() {
+    ofstream dataFile(FILENAME);
+    if (!dataFile.is_open()) {
+        return false;
+    }
+
+    for (Member &mem: members) {
+        dataFile << mem.ID << '\t' << mem.username << "\t" << mem.password << "\t" 
+                    << mem.name << "\t" << mem.balance << "\t" << mem.phoneNo << "\n";
+    }
+
+    dataFile.close();
+    return true;
+}
+
+// Functino to reload user data to the runtime
 bool System::reloadData()
 {
     ifstream dataFile;
@@ -207,6 +204,7 @@ bool System::reloadData()
     return true;
 }
 
+// Function to save house data
 bool System::saveHouseData() {
     ofstream dataFile;
     dataFile.open(HOUSES_FILENAME);
@@ -236,6 +234,7 @@ bool System::saveHouseData() {
     return true;
 }
 
+// Function to reload house data to the runtime
 bool System::reloadHouseData() {
     ifstream dataFile;
     dataFile.open(HOUSES_FILENAME);
@@ -300,6 +299,7 @@ bool System::reloadHouseData() {
     return true;
 }
 
+// Function to save the request data
 bool System::saveRequestData() {
     ofstream dataFile;
     dataFile.open(REQUESTS_FILENAME);
@@ -323,6 +323,7 @@ bool System::saveRequestData() {
     return true;
 }
 
+// Function to reload request data to the runtime
 bool System::reloadRequestData() {
     ifstream dataFile;
     dataFile.open(REQUESTS_FILENAME);
@@ -375,6 +376,7 @@ bool System::reloadRequestData() {
     return true;
 }
 
+// Function to reload rating data to the runtime
 bool System::reloadRatingData() {
     ifstream dataFile;
     dataFile.open(RATINGS_FILENAME);
@@ -409,6 +411,7 @@ bool System::reloadRatingData() {
     return true;
 }
 
+// Function to save the rating data
 bool System::saveRatingData() {
     ofstream dataFile;
     dataFile.open(RATINGS_FILENAME);
@@ -437,6 +440,25 @@ bool System::saveRatingData() {
     return true;
 }
 
+// Function to view users
+void System::viewUsers() {
+    for (Member &member: members) {
+        cout << "Username: " << member.username << '\n'
+             << "Name: " << member.name << '\n'
+             << "Password: " << member.password << '\n'
+             << "Phone Number: " << member.phoneNo << "\n"
+             << "Balance: " << member.balance << '\n'
+             << "Rating: " << member.rating << "\n\n";
+        if (member.ratings.size() > 0) {
+            cout << "Member ratings: \n";
+            for (Rating &rating: member.ratings) {
+                rating.viewRatingInfo();
+            }
+        }
+    }
+}
+
+// Function to view all the houses info
 void System::viewHouses(Member *loggedMember, bool isAdmin) {
     cout << "Here are the available houses:\n\n";
     bool isEmpty = true;
@@ -509,6 +531,7 @@ void System::viewHouses(Member *loggedMember, bool isAdmin) {
     }
 }
 
+// Function to make a house rent request
 bool System::handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned int accepterMemberID) {
     vector<unsigned int>::iterator ifRequesterCanOccupy = find(members[requesterMemberID - 1].availableHousesToOccupy.begin(), members[requesterMemberID - 1].availableHousesToOccupy.end(), accepterMemberID - 1);
     if (ifRequesterCanOccupy == members[requesterMemberID - 1].availableHousesToOccupy.end()) {
@@ -550,6 +573,7 @@ bool System::handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned i
     return false;
 }
 
+// Function to accept house rent request
 bool System::handleAcceptHouseRequest(unsigned int index) {
     if (index < loggedMember->acceptedRequests.size() && !loggedMember->acceptedRequests[index]->isAccepted) {
         Request *requestToBeAccepted = loggedMember->acceptedRequests[index];
@@ -578,6 +602,7 @@ bool System::handleAcceptHouseRequest(unsigned int index) {
     return false;
 }
 
+// Function to decline house rent request
 void System::handleAccepterDeclinesHouseRequest(unsigned int index) {
     if (index < loggedMember->acceptedRequests.size()) {
         Request *requestToBeAccepted = loggedMember->acceptedRequests[index];
@@ -592,6 +617,7 @@ void System::handleAccepterDeclinesHouseRequest(unsigned int index) {
     }
 }
 
+// Function to decline your rent request
 void System::handleSenderDeclinesHouseRequest(unsigned int index) {
     if (index < loggedMember->sentRequests.size()) {
         Request *requestToBeAccepted = loggedMember->sentRequests[index];
@@ -607,6 +633,7 @@ void System::handleSenderDeclinesHouseRequest(unsigned int index) {
     }
 }
 
+// Function to rate the user
 bool System::handleRateUser() {
     string IDVal, message, rating;
 
@@ -644,6 +671,7 @@ bool System::handleRateUser() {
     return true;
 }
 
+// Function to rate the houses
 bool System::handleRateHouse() {
     string IDVal, message, rating;
 
@@ -681,23 +709,7 @@ bool System::handleRateHouse() {
     return true;
 }
 
-void System::viewUsers() {
-    for (Member &member: members) {
-        cout << "Username: " << member.username << '\n'
-             << "Name: " << member.name << '\n'
-             << "Password: " << member.password << '\n'
-             << "Phone Number: " << member.phoneNo << "\n"
-             << "Balance: " << member.balance << '\n'
-             << "Rating: " << member.rating << "\n\n";
-        if (member.ratings.size() > 0) {
-            cout << "Member ratings: \n";
-            for (Rating &rating: member.ratings) {
-                rating.viewRatingInfo();
-            }
-        }
-    }
-}
-
+// Function to get logged member pointer
 Member* System::getLoggedMember() {
     return this->loggedMember;
 }

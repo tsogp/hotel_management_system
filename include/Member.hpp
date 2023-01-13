@@ -37,11 +37,9 @@ private:
     vector<unsigned int> availableHousesToRate;
     vector<unsigned int> availableHousesToOccupy;
 public:
-    // Will include House class for the user to add later 
     Member(string usernameVal = "", string nameVal = "", string passwordVal = "", string phoneNoVal = "", unsigned int IDVal = 0, int balanceVal = 500);
     
     unsigned int getID();
-
     void viewProfile();
 
     bool registerHouse();

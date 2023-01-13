@@ -7,6 +7,7 @@
 
 using std::find;
 
+// House constructor
 House::House(
     unsigned int memberIDVal,
     string locationVal, 
@@ -23,6 +24,7 @@ House::House(
     minRequiredRating(minRequiredRating),
     unavailableDates(unavailableDatesVal) {};
 
+// Function to get the available dates of this house
 void House::getAvailableDates() {
     unsigned short currentDay = availableDateRange.first.day, 
                    currentMonth = availableDateRange.first.month,
@@ -61,6 +63,7 @@ void House::getAvailableDates() {
     }
 }
 
+// Function to check if this house is available in a certain time period
 unsigned int House::isAvailable(pair<Date, Date> dateRange) {
     if (dateRange.first > dateRange.second) {
         return false;
@@ -102,6 +105,7 @@ unsigned int House::isAvailable(pair<Date, Date> dateRange) {
     return dayAmount;
 }
 
+// Function to make a house unavailable for a certain period of time
 void House::makeUnavailable(pair<Date, Date> dateRange) {
     unsigned short currentDay = dateRange.first.day, 
                    currentMonth = dateRange.first.month,
@@ -130,6 +134,7 @@ void House::makeUnavailable(pair<Date, Date> dateRange) {
     }
 }
 
+// Function to the the general info about the house
 void House::viewHouseInfo() {
     cout << "Location: " << location << '\n'
          << "Description: " << description << '\n'
@@ -146,6 +151,7 @@ void House::viewHouseInfo() {
     }
 }
 
+// Function to calculate house rating
 void House::calculateRating() {
     double averageRating = 0.0;
     for (Rating &rating: ratings) {

@@ -19,8 +19,6 @@ public:
     Date(string inputMessage = "");
     Date(unsigned short day, unsigned short month, unsigned short year);
 
-    friend class House;
-
     static bool isStringNumeric(const string& str);
 
     bool constraintCheck(unsigned short dayVal, unsigned short monthVal, unsigned short yearVal, bool isErrorMessageNeeded = false);
@@ -29,6 +27,8 @@ public:
 
     friend bool operator == (Date &, Date &);
     friend bool operator > (Date &, Date &);
+
+    friend class House;
 };
 
 #endif

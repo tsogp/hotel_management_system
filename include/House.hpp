@@ -38,15 +38,15 @@ class House {
             vector<Date> unavailableDatesVal = {}
         );
 
+        void getAvailableDates();
+        unsigned int isAvailable(pair<Date, Date> dateRange);
+        void makeUnavailable(pair<Date, Date> dateRange);
+        void viewHouseInfo();
+        void calculateRating();
+
         friend class Member;
         friend class System;
         friend class Request;
-
-        void calculateRating();
-        void getAvailableDates();
-        void viewHouseInfo();
-        unsigned int isAvailable(pair<Date, Date> dateRange);
-        void makeUnavailable(pair<Date, Date> dateRange);
 };
 
 #endif
