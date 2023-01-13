@@ -9,6 +9,16 @@ using std::cin;
 #include "include/Member.hpp"
 #include "include/System.hpp"
 
+void handleChoiceInput(int &choice, string error_msg = "Please pick one of the listed numbers on the menu: ") {
+    cin >> choice;
+    while (cin.fail()) {
+        cout << error_msg;
+        cin.clear();
+        cin.ignore(256,'\n');
+        cin >> choice;
+    }
+}
+
 int main(int argc, char *argv[]) 
 {
     cout << "EEET2482/COSC2082 ASSIGNMENT\n"  
@@ -39,13 +49,13 @@ int main(int argc, char *argv[])
         while (!exit) {
             cout << "---------------------------------------\n"
                  << "Menu:" << "\n"
-                 << "1. Guest" << "\n"
-                 << "2. Member" << "\n"
-                 << "3. Admin" << "\n"
-                 << "0. Exit" << "\n\n"
+                 << "1) Guest" << "\n"
+                 << "2) Member" << "\n"
+                 << "3) Admin" << "\n"
+                 << "0) Exit" << "\n\n"
                  << "-> Please enter your choice: ";
             
-            cin >> choice;
+            handleChoiceInput(choice);
 
             switch (choice) {
                 case 1:
@@ -58,8 +68,8 @@ int main(int argc, char *argv[])
                              << "0) Exit\n\n"
                              << "-> Please enter your choice: ";
 
-                        cin >> choice;
-
+                        handleChoiceInput(choice);
+     
                         switch (choice) {
                             case 1:
                                 sys->viewHouses();
@@ -94,7 +104,7 @@ int main(int argc, char *argv[])
                                     << "0) Exit\n\n"
                                     << "-> Please enter your choice: ";
 
-                            cin >> choice;
+                            handleChoiceInput(choice);
 
                             switch (choice) {
                                 case 1:
@@ -114,10 +124,10 @@ int main(int argc, char *argv[])
                                     sys->viewHouses(sys->getLoggedMember());
                                     break;  
                                 case 5:
-                                    cout << "Type House ID that you want to book: ";
+                                    cout << "Check the available houses first. Type House ID that you want to book: ";
 
-                                    unsigned int id;
-                                    cin >> id;
+                                    int id;
+                                    handleChoiceInput(id, "Please type an available House ID (non-negative integer): ");
 
                                     sys->handleOccupyHouseRequest(sys->getLoggedMember()->getID(), id);
                                     break;
@@ -133,26 +143,25 @@ int main(int argc, char *argv[])
                                     
                                     if (ifAcceptedRequests) {
                                         while (!exitRequest) {
-                                            sys->getLoggedMember()->viewAcceptedRequestsInfo();
                                             cout << "---------------------------------------\n\n"
                                                 << "1) Accept Request\n"
                                                 << "2) Decline Request\n"
                                                 << "0) Exit\n\n"
                                                 << "-> Please enter your choice: ";
 
-                                            cin >> choice;
+                                            handleChoiceInput(choice);
 
                                             switch (choice) {
                                                 case 1:
-                                                    unsigned int acceptID;
-                                                    cout << "\nChoose the request ID to accept: ";
-                                                    cin >> acceptID;
+                                                    int acceptID;
+                                                    cout << "\nChoose the Request ID to accept: ";
+                                                    handleChoiceInput(acceptID, "Please type an available Request ID (non-negative integer): ");
                                                     sys->handleAcceptHouseRequest(acceptID - 1);
                                                     break;
                                                 case 2:
-                                                    unsigned int declineID;
-                                                    cout << "\nChoose the request ID to decline: ";
-                                                    cin >> declineID;
+                                                    int declineID;
+                                                    cout << "\nChoose the Request ID to decline: ";
+                                                    handleChoiceInput(declineID, "Please type an available Request ID (non-negative integer): ");
                                                     sys->handleAccepterDeclinesHouseRequest(declineID - 1);
                                                     break;
                                                 case 0:
@@ -162,6 +171,8 @@ int main(int argc, char *argv[])
                                                     cout << "Invalid choice.\n";
                                                     break;
                                             }
+
+                                            sys->getLoggedMember()->viewAcceptedRequestsInfo();
                                         }
                                     } 
                                     break;
@@ -172,19 +183,18 @@ int main(int argc, char *argv[])
 
                                     if (ifSentRequests) {
                                         while (!exitRequest) {
-                                            sys->getLoggedMember()->viewSentRequestsInfo();
                                             cout << "---------------------------------------\n\n"
                                                 << "1) Cancel Request\n"
                                                 << "0) Exit\n\n"
                                                 << "-> Please enter your choice: ";
 
-                                            cin >> choice;
+                                            handleChoiceInput(choice);
 
                                             switch (choice) {
                                                 case 1:
-                                                    unsigned int id;
-                                                    cout << "\nChoose the request ID to cancel: ";
-                                                    cin >> id;
+                                                    int id;
+                                                    cout << "\nChoose the Request ID to cancel: ";
+                                                    handleChoiceInput(id, "Please type an available Request ID (non-negative integer): ");
                                                     sys->handleSenderDeclinesHouseRequest(id - 1);
                                                     break;
                                                 case 0:
@@ -194,6 +204,8 @@ int main(int argc, char *argv[])
                                                     cout << "Invalid choice.\n";
                                                     break;
                                             }
+
+                                            sys->getLoggedMember()->viewSentRequestsInfo();
                                         }
                                     }
                                     break;
@@ -222,7 +234,7 @@ int main(int argc, char *argv[])
                                      << "0) Exit\n\n"
                                      << "-> Please enter your choice: ";
 
-                                cin >> choice;
+                                handleChoiceInput(choice);
 
                                 switch (choice) {
                                     case 1:

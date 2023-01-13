@@ -457,7 +457,7 @@ void System::viewHouses(Member *loggedMember, bool isAdmin) {
         }
     } else {
         string ifWantsLocation;
-        cout << "Would you like to choose a particular location for the house (type yes for yes, anything else for for no)?\n";
+        cout << "Would you like to choose a particular location for the house (type yes for yes, anything else for for no): ";
         
         do {
             getline (cin, ifWantsLocation);
@@ -552,7 +552,7 @@ bool System::handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned i
 }
 
 bool System::handleAcceptHouseRequest(unsigned int index) {
-    if (index < loggedMember->acceptedRequests.size()) {
+    if (index < loggedMember->acceptedRequests.size() && !loggedMember->acceptedRequests[index]->isAccepted) {
         Request *requestToBeAccepted = loggedMember->acceptedRequests[index];
         
         unsigned int dayVal = loggedMember->viewHouse()->isAvailable(requestToBeAccepted->requestDateRange);
@@ -569,6 +569,9 @@ bool System::handleAcceptHouseRequest(unsigned int index) {
             cout << "You have already chosen another customer for this dates. Cancelling request.\n";
             requestToBeAccepted->isActive = false;
         }
+    } else if (loggedMember->acceptedRequests[index]->isAccepted) {
+        cout << "You have already accepted this request.\n";
+        return true;
     } else {
         cout << "Invalid request index.\n";
     }
@@ -609,7 +612,7 @@ bool System::handleRateUser() {
     string IDVal, message, rating;
 
     do {
-        cout << "Type the ID of the house to rate it's owner: ";
+        cout << "You can rate the users that have approved you or have been approved by you. \nYou can check those in the requests tab. Type the ID of the house to rate it's owner: ";
         cin.ignore();
         getline(cin, IDVal);
     } while (IDVal == "");
@@ -646,7 +649,7 @@ bool System::handleRateHouse() {
     string IDVal, message, rating;
 
     do {
-        cout << "Type the house ID to rate it: ";
+        cout << "You can rate the houses that have been approved for you. You can check those in the requests tab. Type the house ID to rate it: ";
         cin.ignore();
         getline(cin, IDVal);
     } while (IDVal == "");

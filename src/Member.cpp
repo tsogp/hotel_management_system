@@ -3,6 +3,16 @@
 
 #include "../include/Member.hpp"
 
+void handleDoubleInput(double &value, string error_msg = "Please enter a double number and use . as a divider: ") {
+    cin >> value;
+    while (cin.fail()) {
+        cout << error_msg;
+        cin.clear();
+        cin.ignore(256,'\n');
+        cin >> value;
+    }
+}
+
 Member::Member(string usernameVal, string nameVal, string passwordVal, string phoneNoVal, unsigned int IDVal, int balanceVal) 
     : username(usernameVal), name(nameVal), password(passwordVal), phoneNo(phoneNoVal), ID(IDVal), balance(balanceVal) {};
 
@@ -38,7 +48,8 @@ bool Member::registerHouse() {
 
     cout << "House can be available from 1/1/2023 to 31/12/2030\n\n";
 
-    string description = "", location = "", price = "", minRequiredRating = "";
+    string description = "", location = "";
+    double price, minimalRequiredRating;
 
     while (true) {
         string locationChoice;
@@ -76,18 +87,18 @@ bool Member::registerHouse() {
     Date startDate("Now enter the start date when your house is available.");
     Date endDate("Now enter the end date when your house is available.");
 
+    if (startDate > endDate) {
+        cout << "The first date can't be later than the second date.\n";
+        return false;
+    }
+
     cout << "Enter daily price for the house (please use . as digit divider): ";
-    do {
-        getline(cin, price);
-    } while (price == "");
+    handleDoubleInput(price);
 
     cout << "Enter minimum required rating for the guest (please use . as digit divider): ";
-    do {
-        getline(cin, minRequiredRating);
-    } while (price == "");
+    handleDoubleInput(minimalRequiredRating);
 
-
-    House *housePtr = new House(this->ID, location, description, {startDate, endDate}, stod(price), stod(minRequiredRating));
+    House *housePtr = new House(this->ID, location, description, {startDate, endDate}, price, minimalRequiredRating);
     if (housePtr != nullptr) {
         house = housePtr;
     } else {
@@ -122,6 +133,7 @@ bool Member::viewSentRequestsInfo() {
             cout << "Location: " << sentRequests[i]->house->location << '\n'
                  << "Description: " << sentRequests[i]->house->description << '\n'
                  << "Daily price: " << sentRequests[i]->house->pricePerDay << '\n'
+                 << "House and Owner ID: " << acceptedRequests[i]->house->memberID << '\n'
                  << "Is accepted: " << sentRequests[i]->isAccepted << "\n\n";
         }
     } else {
@@ -140,6 +152,7 @@ bool Member::viewAcceptedRequestsInfo() {
             cout << "Location: " << acceptedRequests[i]->house->location << '\n'
                  << "Description: " << acceptedRequests[i]->house->description << '\n'
                  << "Daily price: " << acceptedRequests[i]->house->pricePerDay << '\n'
+                 << "House and Owner ID: " << acceptedRequests[i]->house->memberID << '\n'
                  << "Is accepted: " << acceptedRequests[i]->isAccepted << "\n\n";
         }
     } else {
