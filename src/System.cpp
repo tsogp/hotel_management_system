@@ -539,10 +539,19 @@ bool System::handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned i
         return false;
     }
 
-    Date startDate("Please provide the start date from when you want to book the house.");
-    Date endDate("Please provide the end date from when you want to book the house.");
-
     House *house = members[accepterMemberID - 1].viewHouse();
+
+    Date startDate("Please provide the start date from when you want to book the house.");
+    
+    if (house->availableDateRange.first > startDate) {
+        cout << "The first date can't be earlier that the house's available range.\n";
+        return false;
+    } else if (startDate > house->availableDateRange.second) {
+        cout << "The first date can't be later that the house's available range.\n";
+        return false;
+    }
+    
+    Date endDate("Please provide the end date from when you want to book the house.");
 
     if (startDate > endDate) {
         cout << "The first date can't be later than the second date.\n";
@@ -550,10 +559,7 @@ bool System::handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned i
     } else if (endDate > house->availableDateRange.second) {
         cout << "The second date can't be later than the house's available range.\n";
         return false;
-    } else if (house->availableDateRange.first > startDate) {
-        cout << "The first date can't be earlier that the house's available range.\n";
-        return false;
-    }
+    } 
 
     house->isAvailable(make_pair(startDate, endDate));
 

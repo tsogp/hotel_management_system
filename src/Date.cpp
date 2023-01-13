@@ -47,7 +47,7 @@ Date::Date(string inputMessage) {
             yearVal = "0";
             continue;
         }
-    } while (!constraintCheck(stoi(dayVal), stoi(monthVal), stoi(yearVal)) || (dayVal == "0" || monthVal == "0" || yearVal == "0"));
+    } while (!constraintCheck(stoi(dayVal), stoi(monthVal), stoi(yearVal), true) || (dayVal == "0" || monthVal == "0" || yearVal == "0"));
 
     day = stoi(dayVal);
     month = stoi(monthVal);
