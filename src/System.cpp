@@ -520,12 +520,19 @@ bool System::handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned i
     Date startDate("Please provide the start date from when you want to book the house.");
     Date endDate("Please provide the end date from when you want to book the house.");
 
+    House *house = members[accepterMemberID - 1].viewHouse();
+
     if (startDate > endDate) {
         cout << "The first date can't be later than the second date.\n";
         return false;
+    } else if (endDate > house->availableDateRange.second) {
+        cout << "The second date can't be later than the house's available range.\n";
+        return false;
+    } else if (house->availableDateRange.first > startDate) {
+        cout << "The first date can't be earlier that the house's available range.\n";
+        return false;
     }
 
-    House *house = members[accepterMemberID - 1].viewHouse();
     house->isAvailable(make_pair(startDate, endDate));
 
     unsigned int dayAmount = members[accepterMemberID - 1].viewHouse()->isAvailable(make_pair(startDate, endDate));
