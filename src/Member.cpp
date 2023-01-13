@@ -93,6 +93,8 @@ bool Member::registerHouse() {
     } else {
         delete housePtr;
     }
+
+    return true;
 }
 
 House* Member::viewHouse() {

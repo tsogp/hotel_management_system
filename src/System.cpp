@@ -609,7 +609,8 @@ bool System::handleRateUser() {
     string IDVal, message, rating;
 
     do {
-        cout << "Type the ID of the house it's owner: ";
+        cout << "Type the ID of the house to rate it's owner: ";
+        cin.ignore();
         getline(cin, IDVal);
     } while (IDVal == "");
 
@@ -646,6 +647,7 @@ bool System::handleRateHouse() {
 
     do {
         cout << "Type the house ID to rate it: ";
+        cin.ignore();
         getline(cin, IDVal);
     } while (IDVal == "");
 
