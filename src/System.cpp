@@ -487,7 +487,7 @@ void System::viewHouses(Member *loggedMember, bool isAdmin) {
         }
 
         for (Member &mem: members) {
-            if (mem.house != nullptr && mem.house->memberID != loggedMember->ID && mem.house->minRequiredRating <= loggedMember->rating && mem.house->pricePerDay <= loggedMember->balance) {
+            if (mem.house != nullptr && (isAdmin || (mem.house->memberID != loggedMember->ID && mem.house->minRequiredRating <= loggedMember->rating && mem.house->pricePerDay <= loggedMember->balance))) {
                 if (ifWantsLocation == "yes") {
                     if (mem.house->location == location) {
                         isEmpty = false;
