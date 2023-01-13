@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
                     while (!loopMember) {
                         if ((sys->getLoggedMember() != nullptr) || (sys->getLoggedMember() == nullptr && sys->loginUser())) {
                             cout << "\n---------------------------------------\n\n"
-                                    << "1) View Profile + Ratings\n"
+                                    << "1) View Profile + House + Ratings\n"
                                     << "2) Register House\n"
                                     << "3) Delete House\n"
                                     << "4) Search House\n"

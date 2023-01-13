@@ -67,7 +67,7 @@ bool System::saveData() {
 // 3) Return false until everything is done
 bool System::registerMem() {
     string username;
-    cout << "Input your username: ";
+    cout << "Input your username (not empty): ";
     do {
         getline(cin, username);
     } while (username == "");
@@ -91,7 +91,7 @@ bool System::registerMem() {
         
         do {
             while (true) {
-                cout << "Enter your phone number (not empty): ";
+                cout << "Enter your phone number (not empty and only numeric): ";
                 getline(cin, phoneNo);
                 if (!Date::isStringNumeric(phoneNo)) {
                     cout << "The number value must only be numeric. Try again.\n";
@@ -103,10 +103,9 @@ bool System::registerMem() {
         
         Member newMember(username, name, password, phoneNo, IDCounter);
         members.push_back(newMember);
-        loggedMember = &members.back();
         IDCounter++;
 
-        cout << "\nRegistration complete! You're also now logged in. Please exit guest mode.\n";
+        cout << "\nRegistration complete!\nPlease exit the guest menu to log in to your account or restart the program if you're already logged in.\n";
         return true;
     }
     
