@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
     if (sys != nullptr) {
         while (!exit) {
-            cout << "---------------------------------------\n"
+            cout << "\n-------------------GUEST MODE-------------------\n"
                  << "Menu:" << "\n"
                  << "1) Guest" << "\n"
                  << "2) Member" << "\n"
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
                     exitGuest = false;
 
                     while (!exitGuest) {
-                        cout << "\n---------------------------------------\n\n"
+                        cout << "\n-------------------GUEST MODE-------------------\n"
                              << "1) View Houses\n"
                              << "2) Register as Member\n"
                              << "0) Exit\n\n"
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
                     while (!loopMember) {
                         if ((sys->getLoggedMember() != nullptr) || (sys->getLoggedMember() == nullptr && sys->loginUser())) {
-                            cout << "\n---------------------------------------\n\n"
+                            cout << "\n-------------------MEMBER MODE-------------------\n"
                                     << "1) View Profile + House + Ratings\n"
                                     << "2) Register House\n"
                                     << "3) Delete House\n"
@@ -227,7 +227,7 @@ int main(int argc, char *argv[])
                     while (!loopAdmin) {                        
                         if (sys->loginAdmin()) { 
                             while (!loopAdmin) {
-                                cout << "\n---------------------------------------\n\n"
+                                cout << "\n-------------------ADMIN MODE-------------------\n"
                                      << "1) View House Listing\n"
                                      << "2) View User Profile\n"
                                      << "0) Exit\n\n"

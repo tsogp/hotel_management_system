@@ -561,11 +561,9 @@ bool System::handleOccupyHouseRequest(unsigned int requesterMemberID, unsigned i
         return false;
     } 
 
-    house->isAvailable(make_pair(startDate, endDate));
-
-    unsigned int dayAmount = members[accepterMemberID - 1].viewHouse()->isAvailable(make_pair(startDate, endDate));
+    unsigned int dayAmount = house->isAvailable(make_pair(startDate, endDate));;
     if (dayAmount) {
-        Request *reqPtr = new Request(requesterMemberID, accepterMemberID, make_pair(startDate, endDate), members[accepterMemberID - 1].viewHouse());
+        Request *reqPtr = new Request(requesterMemberID, accepterMemberID, make_pair(startDate, endDate), house);
 
         members[accepterMemberID - 1].acceptedRequests.push_back(reqPtr);
         members[requesterMemberID - 1].sentRequests.push_back(reqPtr);
@@ -610,7 +608,7 @@ bool System::handleAcceptHouseRequest(unsigned int index) {
 
 // Function to decline house rent request
 void System::handleAccepterDeclinesHouseRequest(unsigned int index) {
-    if (index < loggedMember->acceptedRequests.size()) {
+    if (index < loggedMember->acceptedRequests.size() && loggedMember->acceptedRequests[index]->isActive) {
         Request *requestToBeAccepted = loggedMember->acceptedRequests[index];
         if (requestToBeAccepted->isAccepted) {
             cout << "\nThis request is already accepted, can't cancel it.\n\n";
@@ -625,7 +623,7 @@ void System::handleAccepterDeclinesHouseRequest(unsigned int index) {
 
 // Function to decline your rent request
 void System::handleSenderDeclinesHouseRequest(unsigned int index) {
-    if (index < loggedMember->sentRequests.size()) {
+    if (index < loggedMember->sentRequests.size() && loggedMember->sentRequests[index]->isActive) {
         Request *requestToBeAccepted = loggedMember->sentRequests[index];
         if (requestToBeAccepted->isAccepted) {
             cout << "\nThis request is already accepted, can't cancel it.\n\n";

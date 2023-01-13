@@ -136,13 +136,16 @@ void Member::deleteHouse() {
 bool Member::viewSentRequestsInfo() {
     if (sentRequests.size() != 0) {
         for (int i = 0; i < sentRequests.size(); i++) {
-            cout << "ID: " << i + 1 << '\n'
-                 << "Location range: " << sentRequests[i]->requestDateRange.first.stringifyDate() << " to " << sentRequests[i]->requestDateRange.second.stringifyDate() << "\n\n";
-            cout << "Location: " << sentRequests[i]->house->location << '\n'
-                 << "Description: " << sentRequests[i]->house->description << '\n'
-                 << "Daily price: " << sentRequests[i]->house->pricePerDay << '\n'
-                 << "House and Owner ID: " << acceptedRequests[i]->house->memberID << '\n'
-                 << "Is accepted: " << sentRequests[i]->isAccepted << "\n\n";
+            if (sentRequests[i]->isActive) {
+                cout << "ID: " << i + 1 << '\n'
+                     << "Location range: " << sentRequests[i]->requestDateRange.first.stringifyDate() << " to " << sentRequests[i]->requestDateRange.second.stringifyDate() << "\n\n";
+                cout << "Location: " << sentRequests[i]->house->location << '\n'
+                     << "Description: " << sentRequests[i]->house->description << '\n'
+                     << "Daily price: " << sentRequests[i]->house->pricePerDay << '\n'
+                     << "House and Owner ID: " << sentRequests[i]->house->memberID << '\n'
+                     << "Is accepted: " << sentRequests[i]->isAccepted << "\n\n";
+            }
+
         }
     } else {
         cout << "You have no sent requests.\n\n";
@@ -156,13 +159,16 @@ bool Member::viewSentRequestsInfo() {
 bool Member::viewAcceptedRequestsInfo() {
     if (acceptedRequests.size() != 0) {
         for (int i = 0; i < acceptedRequests.size(); i++) {
-            cout << "ID: " << i + 1 << '\n'
-                 << "Location range: " << acceptedRequests[i]->requestDateRange.first.stringifyDate() << " to " << acceptedRequests[i]->requestDateRange.second.stringifyDate() << "\n\n";
-            cout << "Location: " << acceptedRequests[i]->house->location << '\n'
-                 << "Description: " << acceptedRequests[i]->house->description << '\n'
-                 << "Daily price: " << acceptedRequests[i]->house->pricePerDay << '\n'
-                 << "House and Owner ID: " << acceptedRequests[i]->house->memberID << '\n'
-                 << "Is accepted: " << acceptedRequests[i]->isAccepted << "\n\n";
+            if (acceptedRequests[i]->isActive) {
+                cout << "ID: " << i + 1 << '\n'
+                     << "Location range: " << acceptedRequests[i]->requestDateRange.first.stringifyDate() << " to " << acceptedRequests[i]->requestDateRange.second.stringifyDate() << "\n\n";
+                cout << "Location: " << acceptedRequests[i]->house->location << '\n'
+                     << "Description: " << acceptedRequests[i]->house->description << '\n'
+                     << "Daily price: " << acceptedRequests[i]->house->pricePerDay << '\n'
+                     << "House and Owner ID: " << acceptedRequests[i]->house->memberID << '\n'
+                     << "Is accepted: " << acceptedRequests[i]->isAccepted << "\n\n";
+            }
+
         }
     } else {
         cout << "You have no incoming requests.\n\n";
