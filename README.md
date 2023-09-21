@@ -1,1 +1,1 @@
-# EEET2482_Group_Assignment
+# Hotel Management System
